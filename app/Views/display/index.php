@@ -101,12 +101,14 @@
                     </div>
                 </div>
 
-                <!-- Panel Overlay untuk Adzan dan Iqamah -->
-                <div id="overlayAdzan" class="absolute inset-0 bg-black bg-opacity-90 z-50 flex flex-col items-center justify-center hidden">
-                    <div id="judulAdzan" class="text-white text-4xl md:text-6xl font-bold mb-4">Adzan</div>
-                    <div id="countdownAdzanIqamah" class="text-yellow-300 text-4xl md:text-6xl font-extrabold tracking-wide">--:--</div>
+                <!-- Overlay Adzan/Iqamah Fullscreen -->
+                <div id="overlayAdzan"
+                    class="fixed inset-0 z-[999] hidden bg-black flex flex-col justify-center items-center text-center">
+                    <div class="text-6xl md:text-7xl font-bold text-yellow-300 mb-6 drop-shadow-lg" id="adzan-label">Adzan</div>
+                    <div class="text-5xl md:text-6xl text-white font-semibold tracking-widest" id="adzan-countdown">--:--</div>
                 </div>
-
+                <!-- Suara Notifikasi -->
+                <audio id="sound-buzzer" src="<?= site_url("assets\sounds\default-alarm.wav"); ?>" preload="auto"></audio>
             </div>
         </div>
 
@@ -359,6 +361,8 @@
             // Tampilkan overlay
             document.getElementById('overlayAdzan').classList.remove('hidden');
             document.getElementById('judulAdzan').textContent = "Adzan";
+
+            playBuzzer();
         }
 
         function updateAdzanIqamahCountdown() {
@@ -385,6 +389,15 @@
                 }
             }
         }
+
+        function playBuzzer() {
+            const audio = document.getElementById("sound-buzzer");
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.warn("Audio tidak dapat diputar:", e));
+            }
+        }
+
 
         function formatCountdown(detik) {
             const m = String(Math.floor(detik / 60)).padStart(2, '0');
