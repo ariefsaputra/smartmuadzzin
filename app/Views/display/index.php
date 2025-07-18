@@ -9,60 +9,7 @@
     <script src="<?= site_url('assets/js/alpinejs.min.js'); ?>" defer></script>
     <link rel="stylesheet" href="<?= site_url('assets/css/swiper-bundle.min.css'); ?>" />
     <script src="<?= site_url('assets/js/swiper-bundle.min.js'); ?>"></script>
-    <style>
-        body {
-            overflow: hidden;
-        }
-
-        .marquee {
-            white-space: nowrap;
-            overflow: hidden;
-            box-sizing: border-box;
-            animation: marquee 30s linear infinite;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(100%)
-            }
-
-            100% {
-                transform: translateX(-100%)
-            }
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .animate-blink {
-            animation: blink 1s ease-in-out infinite;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(100%)
-            }
-
-            100% {
-                transform: translateX(-100%)
-            }
-        }
-
-        .animate-marquee-on-overflow {
-            display: inline-block;
-            white-space: nowrap;
-            animation: marquee 15s linear infinite;
-        }
-    </style>
+    <link rel="stylesheet" href="<?= site_url('assets/css/style.css'); ?>">
 </head>
 
 <body class="h-full w-full bg-sky-100 text-slate-800 font-sans">
@@ -108,25 +55,17 @@
         </div>
     </header>
 
-
     <!-- MAIN SLIDER -->
     <main class="relative h-[80vh]">
         <!-- Background Slider -->
         <div class="swiper h-full">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="assets/masjid1.jpg" class="object-cover w-full h-full" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="assets/masjid2.jpg" class="object-cover w-full h-full" />
-                </div>
-                <div class="swiper-slide">
-                    <img src="assets/masjid3.jpg" class="object-cover w-full h-full" />
+                    <img src="<?= site_url('assets/img/foto-masjid.jpg'); ?>" class="object-cover w-full h-full" />
                 </div>
             </div>
         </div>
 
-        <!-- Jadwal Sholat -->
         <!-- Jadwal Sholat -->
         <div class="absolute bottom-0 w-full px-6 py-4 bg-black/20 z-10">
             <div class="grid grid-cols-8 gap-3">
@@ -195,7 +134,7 @@
     <!-- FOOTER -->
     <footer class="bg-blue-900 text-white py-3 shadow-inner">
         <marquee behavior="scroll" direction="left" class="text-xl font-medium tracking-wide">
-            🕌 Selamat datang di Masjid Jami Al-Hikmah | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
+            🕌 Selamat Datang di Masjid Al Ukhuwwah Komp. Griya Saluyu | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
         </marquee>
     </footer>
 
@@ -333,10 +272,13 @@
         </p>
 
         <!-- Quote Ringan -->
-        <div class="mt-12 text-center text-lg text-white/50 italic">
+        <?php /*<div class="mt-12 text-center text-lg text-white/50 italic">
             <p>“Hayya 'ala ash-shalah... Hayya 'ala al-falah...”</p>
-        </div>
+        </div>*/ ?>
     </div>
+
+    <audio id="audio-alarm" src="<?= site_url('assets/sounds/default-alarm.mp3'); ?>" preload="auto"></audio>
+    <button onclick="document.getElementById('audio-alarm').play()" class="hidden">Aktifkan Suara</button>
 
     <!-- Notifikasi ringan -->
     <div id="notifikasi-ringkas" class="fixed top-20 right-6 z-40 bg-yellow-400 text-black text-xl font-semibold px-6 py-4 rounded-xl shadow-lg hidden transition-all duration-500">

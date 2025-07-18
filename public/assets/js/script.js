@@ -1,3 +1,6 @@
+const now = new Date();
+const isJumat = now.getDay() === 5; // 5 = Jumat
+
 function updateJamDigital() {
     const now = new Date();
     const jam = String(now.getHours()).padStart(2, '0');
@@ -38,7 +41,6 @@ function getActivePrayer() {
     return null;
 }
 
-
 function updateActiveCard() {
     const aktif = getActivePrayer();
     console.log('Aktif sekarang:', aktif); // 🔍 Debug: tampilkan waktu aktif
@@ -62,6 +64,9 @@ function updateActiveCard() {
 updateActiveCard();
 setInterval(updateActiveCard, 30000);
 
+// EVENT SEBELUM ADZAN
+const audioAlarm = document.getElementById('audio-alarm');
+
 const overlay = document.getElementById('overlay-waktu-sholat');
 const judulOverlay = document.getElementById('judul-overlay');
 const keteranganOverlay = document.getElementById('keterangan-overlay');
@@ -70,14 +75,30 @@ const countdownOverlay = document.getElementById('countdown-overlay');
 let overlayTimer = null;
 
 function tampilkanOverlay(jenis, waktuSholat) {
-    // jenis = 'adzan' | 'iqamah' | 'sholat'
     overlay.classList.remove('hidden');
+
+    // ⛔️ Jika KHUTBAH JUMAT (khusus), tanpa countdown
+    if (jenis === 'khutbah') {
+        judulOverlay.textContent = 'KHUTBAH JUMAT';
+        keteranganOverlay.textContent = 'Harap Tenang';
+        countdownOverlay.textContent = ''; // kosongkan countdown
+        overlayTimer = setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 1800 * 1000); // 30 menit
+        return;
+    }
+
+    // Normal Overlay
     judulOverlay.textContent = jenis.toUpperCase();
     keteranganOverlay.textContent = waktuSholat.charAt(0).toUpperCase() + waktuSholat.slice(1);
 
     if (jenis === 'adzan') {
         countdownDurasi(durasi.adzan[waktuSholat], () => {
-            tampilkanOverlay('iqamah', waktuSholat);
+            if (isJumat && waktuSholat === 'dzuhur') {
+                tampilkanOverlay('khutbah', waktuSholat); // Khutbah khusus Jumat
+            } else {
+                tampilkanOverlay('iqamah', waktuSholat);
+            }
         });
     } else if (jenis === 'iqamah') {
         countdownDurasi(durasi.iqamah[waktuSholat], () => {
@@ -114,6 +135,36 @@ function updateCountdown(s) {
 
 let adzanSudahTayang = {};
 
+function aktifkanSuara() {
+    const audio = document.getElementById('audio-alarm');
+    if (audio) {
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            console.log('🔊 Suara siap digunakan.');
+        }).catch(err => {
+            console.error('❌ Gagal menginisialisasi suara:', err);
+        });
+    }
+}
+
+window.addEventListener('click', aktifkanSuara, { once: true });
+
+function mainkanAlarm(volume = 1.0) {
+    const audio = document.getElementById('audio-alarm');
+    if (!audio) {
+        console.warn("Elemen audio 'audio-alarm' tidak ditemukan!");
+        return;
+    }
+
+    audio.pause();        // berhenti dulu kalau sedang main
+    audio.currentTime = 0; // ulang dari awal
+    audio.volume = volume;
+    audio.play().catch(err => {
+        console.error("Gagal memutar audio:", err);
+    });
+}
+
 function cekDanTampilkanOverlay() {
     const aktif = getActivePrayer();
     const now = new Date();
@@ -125,6 +176,7 @@ function cekDanTampilkanOverlay() {
     // Cek selisih waktu
     if (!adzanSudahTayang[aktif] && Math.abs((now - waktuAktif) / 1000) < 5) {
         tampilkanOverlay('adzan', aktif);
+        mainkanAlarm(0.8); // volume 70%
         adzanSudahTayang[aktif] = true;
     }
 }
