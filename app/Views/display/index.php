@@ -1,414 +1,404 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full w-full">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TV Informasi Masjid</title>
-
-    <!-- Tailwind CSS (CDN, atau gunakan versi build sendiri jika offline) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- SwiperJS untuk carousel -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
+    <script src="<?= site_url('assets/js/tailwindcss.min.js'); ?>"></script>
+    <script src="<?= site_url('assets/js/alpinejs.min.js'); ?>" defer></script>
+    <link rel="stylesheet" href="<?= site_url('assets/css/swiper-bundle.min.css'); ?>" />
+    <script src="<?= site_url('assets/js/swiper-bundle.min.js'); ?>"></script>
     <style>
-        /* Animasi marquee sederhana */
-        .animate-marquee {
+        body {
+            overflow: hidden;
+        }
+
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            box-sizing: border-box;
             animation: marquee 30s linear infinite;
         }
 
         @keyframes marquee {
             0% {
-                transform: translateX(100%);
+                transform: translateX(100%)
             }
 
             100% {
-                transform: translateX(-100%);
+                transform: translateX(-100%)
             }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .animate-blink {
+            animation: blink 1s ease-in-out infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(100%)
+            }
+
+            100% {
+                transform: translateX(-100%)
+            }
+        }
+
+        .animate-marquee-on-overflow {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite;
         }
     </style>
 </head>
 
-<body class="bg-black text-white">
+<body class="h-full w-full bg-sky-100 text-slate-800 font-sans">
+    <!-- HEADER -->
+    <header class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center shadow-xl">
+        <!-- Jam Digital -->
+        <div id="jam-digital" class="text-7xl font-bold tracking-widest flex items-center gap-1">
+            <span id="jam">00</span>
+            <span id="separator">:</span>
+            <span id="menit">00</span>
+        </div>
 
-    <div class="w-screen h-screen overflow-hidden bg-gradient-to-br from-green-950 via-black to-emerald-900 text-white font-[\'Noto Serif\',serif]">
-        <div class="grid grid-cols-10 gap-0 h-[calc(100%-3rem)]">
-            <!-- Kolom Kiri: Nama Masjid & Jadwal Sholat -->
-            <div class="col-span-10 md:col-span-3 bg-gradient-to-b from-green-900/40 to-emerald-800/30 backdrop-blur-xl rounded-none shadow-xl border-r border-green-700/30 flex flex-col justify-start space-y-4 overflow-y-auto p-4">
-                <h1 class="text-3xl font-bold text-center text-emerald-200 tracking-wide drop-shadow-md border-b border-emerald-500 pb-2">
-                    <?= esc($pengaturan['nama_masjid'] ?? 'Nama Masjid') ?>
-                </h1>
+        <div class="text-center max-w-full">
+            <!-- Nama Masjid -->
+            <h1 class="text-4xl font-bold uppercase tracking-wide text-white drop-shadow-md">
+                <?= esc($pengaturan['nama_masjid'] ?? 'Nama Masjid') ?>
+            </h1>
 
-                <!-- Nama Kota -->
-                <div class="text-sm text-center text-white/70 tracking-wide uppercase">
-                    <?= esc($pengaturan['nama_kota'] ?? 'Kota Bandung') ?>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-1 gap-2">
-                    <?php
-                    $labelMap = [
-                        'imsak' => 'Imsak',
-                        'subuh' => 'Subuh',
-                        'terbit' => 'Terbit',
-                        'dzuhur' => 'Dzuhur',
-                        'ashar' => 'Ashar',
-                        'maghrib' => 'Maghrib',
-                        'isya' => 'Isya',
-                    ];
-                    foreach ($labelMap as $key => $label):
-                        $waktu = $jadwal[$key] ?? '--:--';
-                    ?>
-                        <div class="bg-emerald-100/10 p-2 rounded-xl border border-emerald-400/20 flex justify-between items-center px-3" data-key="<?= $key ?>">
-                            <div class="text-xs text-emerald-200 uppercase font-medium text-left"><?= $label ?></div>
-                            <div class="text-lg font-semibold text-yellow-200 text-right"><?= substr($waktu, 0, 5) ?></div>
-                        </div>
-                    <?php endforeach ?>
-
-                    <!-- Informasi Hari, Tanggal & Jam -->
-                    <div class="mt-1 text-center space-y-1">
-                        <div id="tanggal-komplit" class="text-base md:text-xl text-center text-white font-semibold py-1"></div>
-                        <div id="clock" class="text-[4rem] md:text-[6rem] font-extrabold tracking-widest text-yellow-100 drop-shadow-lg leading-tight"></div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Kolom Kanan: Carousel + Jam + Countdown -->
-            <div class="col-span-10 md:col-span-7 relative rounded-none overflow-hidden shadow-xl">
-                <div class="absolute inset-0">
-                    <div class="swiper mySwiper w-full h-full">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Masjid_al-Haram%2C_Mecca_at_night.jpg" alt="Masjidil Haram" class="w-full h-full object-cover">
-                            </div>
-                            <div class="swiper-slide">
-                                <img src="https://thesaudiboom.com/wp-content/uploads/2025/04/1-Over-3-Million-Worshippers-Gathered-at-Two-Holy-Mosques-on-27th-Night-of-Ramadan.png" alt="Masjid Nabawi" class="w-full h-full object-cover">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80 backdrop-blur-sm"></div>
-
-                <!-- Gradient Bayangan Atas + Info Sholat Berikutnya -->
-                <div class="absolute top-0 left-0 right-0 z-20 px-6 pt-4 pb-4 bg-gradient-to-b from-black/70 to-transparent text-center">
-                    <div class="flex flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 text-white/90 text-lg md:text-xl font-semibold">
-                        <span class="text-white/60">Menuju waktu sholat berikutnya</span>
-                        <span id="nextPrayerName" class="text-yellow-400 font-bold">---</span>
-                        <span id="countdown" class="text-yellow-300 font-extrabold text-2xl md:text-3xl">--:--:--</span>
-                    </div>
-                </div>
-
-                <!-- Overlay Adzan/Iqamah Fullscreen -->
-                <div id="overlayAdzan"
-                    class="fixed inset-0 z-[999] hidden bg-black flex flex-col justify-center items-center text-center">
-                    <div class="text-6xl md:text-7xl font-bold text-yellow-300 mb-6 drop-shadow-lg" id="adzan-label">Adzan</div>
-                    <div class="text-5xl md:text-6xl text-white font-semibold tracking-widest" id="adzan-countdown">--:--</div>
-                </div>
-                <!-- Suara Notifikasi -->
-                <audio id="sound-buzzer" src="<?= site_url("assets\sounds\default-alarm.wav"); ?>" preload="auto"></audio>
+            <!-- Alamat Masjid -->
+            <div class="mt-1 overflow-hidden whitespace-nowrap relative h-8">
+                <p id="alamatMasjid"
+                    class="text-xl font-medium text-white/90 inline-block px-4 animate-marquee-on-overflow">
+                    <?= esc($pengaturan['alamat'] ?? 'Alamat Masjid') ?>
+                </p>
             </div>
         </div>
 
-        <!-- Running Text -->
-        <div class="w-full h-12 bg-gradient-to-r from-emerald-900 to-green-800 overflow-hidden text-white whitespace-nowrap flex items-center">
-            <div class="animate-marquee text-xl px-8">
-                <?= esc($runningText ?? 'Selamat datang di Masjid kami. Mari jaga ketertiban dan kebersihan.') ?>
+        <!-- Hari & Tanggal -->
+        <div
+            x-data="{
+                tanggalM: '',
+                tanggalH: '<?= esc($jadwal['tanggal_hijriyah'] ?? 'Hijriyah') ?>', // ← nanti bisa diganti otomatis
+                init() {
+                const now = new Date();
+                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                this.tanggalM = now.toLocaleDateString('id-ID', options);
+                }
+            }"
+            x-init="init()"
+            class="text-right leading-tight">
+            <p x-text="tanggalM" class="text-3xl font-bold"></p>
+            <p x-text="tanggalH" class="text-2xl italic text-white/70"></p>
+        </div>
+    </header>
+
+
+    <!-- MAIN SLIDER -->
+    <main class="relative h-[80vh]">
+        <!-- Background Slider -->
+        <div class="swiper h-full">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="assets/masjid1.jpg" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="assets/masjid2.jpg" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="assets/masjid3.jpg" class="object-cover w-full h-full" />
+                </div>
             </div>
+        </div>
+
+        <!-- Jadwal Sholat -->
+        <!-- Jadwal Sholat -->
+        <div class="absolute bottom-0 w-full px-6 py-4 bg-black/20 z-10">
+            <div class="grid grid-cols-8 gap-3">
+
+                <!-- Card Imsak -->
+                <div data-sholat="imsak" data-warna="gray-500"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-gray-500 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Imsak</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['imsak'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Subuh -->
+                <div data-sholat="subuh" data-warna="yellow-500"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-yellow-500 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Shubuh</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['subuh'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Syuruq -->
+                <div data-sholat="syuruq" data-warna="orange-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-orange-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Syuruq</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['syuruq'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Dhuha -->
+                <div data-sholat="dhuha" data-warna="yellow-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-yellow-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Dhuha</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['dhuha'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Dzuhur -->
+                <div data-sholat="dzuhur" data-warna="blue-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-blue-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Dzuhur</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['dzuhur'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Ashar -->
+                <div data-sholat="ashar" data-warna="green-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-green-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Ashar</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['ashar'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Maghrib -->
+                <div data-sholat="maghrib" data-warna="red-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-red-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Maghrib</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['maghrib'], 0, 5) ?></p>
+                </div>
+
+                <!-- Card Isya -->
+                <div data-sholat="isya" data-warna="purple-400"
+                    class="rounded-xl px-4 py-4 text-center shadow-lg bg-white text-black border-b-4 border-purple-400 transition-all duration-300">
+                    <h2 class="text-xl font-semibold">Isya'</h2>
+                    <p class="text-4xl font-bold"><?= substr($jadwal['isya'], 0, 5) ?></p>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-blue-900 text-white py-3 shadow-inner">
+        <marquee behavior="scroll" direction="left" class="text-xl font-medium tracking-wide">
+            🕌 Selamat datang di Masjid Jami Al-Hikmah | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
+        </marquee>
+    </footer>
+
+    <!-- Admin Panel Fullscreen -->
+    <div id="admin-panel" x-data="{ showAdmin: false, activeTab: 'masjid' }">
+        <!-- Tombol Setting -->
+        <a href="#" @click="showAdmin = true; loadPengaturan()"
+            class="fixed top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2 bg-blue-600 hover:bg-blue-700 text-white rounded-l-full px-3 py-2 shadow-md z-50">
+            ⚙️
+        </a>
+
+        <!-- Panel -->
+        <div x-show="showAdmin" x-transition
+            class="fixed inset-0 bg-white z-50 overflow-auto"
+            style="display: none;">
+
+            <!-- Header -->
+            <div class="bg-blue-700 text-white px-6 py-4 flex justify-between items-center shadow">
+                <h2 class="text-xl font-bold">Pengaturan TV Masjid</h2>
+                <button id="btn-close-admin" @click="showAdmin = false" class="text-white text-2xl">✖</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="border-b bg-gray-100 px-6">
+                <nav class="flex space-x-4 pt-4">
+                    <button @click="activeTab = 'masjid'"
+                        :class="activeTab === 'masjid' ? 'border-b-4 border-blue-600 text-blue-700 font-bold' : 'text-gray-600'"
+                        class="pb-3 px-2">🏠 Masjid</button>
+
+                    <button @click="activeTab = 'jadwal'"
+                        :class="activeTab === 'jadwal' ? 'border-b-4 border-blue-600 text-blue-700 font-bold' : 'text-gray-600'"
+                        class="pb-3 px-2">🕒 Jadwal Sholat</button>
+
+                    <button @click="activeTab = 'durasi'"
+                        :class="activeTab === 'durasi' ? 'border-b-4 border-blue-600 text-blue-700 font-bold' : 'text-gray-600'"
+                        class="pb-3 px-2">⏱ Durasi</button>
+                </nav>
+            </div>
+
+            <!-- Konten Tab -->
+            <div class="p-6 space-y-6">
+                <!-- Tab 1: Info Masjid -->
+                <div x-show="activeTab === 'masjid'" x-transition>
+                    <h3 class="text-lg font-semibold mb-2">Informasi Masjid</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label>Nama Masjid</label>
+                            <input type="text" class="w-full border rounded px-3 py-2" placeholder="Masjid Al-Falah" id="namaMasjid">
+                        </div>
+                        <div>
+                            <label>ID Kota (MyQuran API)</label>
+                            <input type="text" class="w-full border rounded px-3 py-2" placeholder="3273" id="idKota">
+                        </div>
+                        <div>
+                            <label>Alamat Masjid</label>
+                            <textarea class="w-full border rounded px-3 py-2" rows="3" placeholder="Jl. Cibogo No. 25, Bandung" id="alamatMasjid"></textarea>
+                        </div>
+
+                        <button onclick="simpanPengaturan()" class="bg-green-600 text-white px-4 py-2 rounded">
+                            💾 Simpan Pengaturan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Sinkronisasi Jadwal -->
+                <div x-show="activeTab === 'jadwal'" x-transition>
+                    <h3 class="text-lg font-semibold mb-2">Sinkronisasi Jadwal Sholat</h3>
+                    <div class="space-y-4">
+                        <button onclick="syncHariIni()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">
+                            🔄 Sinkron Hari Ini
+                        </button>
+                        <button onclick="syncSebulan()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">
+                            📅 Sinkron Bulan Ini
+                        </button>
+                        <button onclick="syncSetahun()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded w-full">
+                            📆 Sinkron 1 Tahun
+                        </button>
+
+                        <div class="mt-4 bg-gray-100 p-4 rounded border text-sm text-gray-700">
+                            <strong>Status:</strong> Jadwal terakhir diupdate <span id="lastUpdate">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Durasi Adzan & Iqamah -->
+                <div x-show="activeTab === 'durasi'" x-transition>
+                    <h3 class="text-lg font-semibold mb-2">Pengaturan Durasi per Waktu Sholat</h3>
+
+                    <template x-for="waktu in ['shubuh', 'dzuhur', 'ashar', 'maghrib', 'isya']">
+                        <div class="border p-4 rounded-md bg-gray-50 mb-4">
+                            <h4 class="font-bold capitalize mb-2" x-text="waktu"></h4>
+
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label>Adzan (detik)</label>
+                                    <input :id="'durasi_' + waktu + '_adzan'" type="number" class="w-full border rounded px-2 py-1">
+                                </div>
+                                <div>
+                                    <label>Iqamah (detik)</label>
+                                    <input :id="'durasi_' + waktu + '_iqamah'" type="number" class="w-full border rounded px-2 py-1">
+                                </div>
+                                <div>
+                                    <label>Sholat (detik)</label>
+                                    <input :id="'durasi_' + waktu + '_sholat'" type="number" class="w-full border rounded px-2 py-1">
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <button onclick="simpanPengaturan()" class="bg-green-600 text-white px-4 py-2 rounded">
+                        💾 Simpan Pengaturan
+                    </button>
+                </div>
+
+            </div>
+
         </div>
     </div>
 
-    <!-- SCRIPT tambahan -->
-    <script>
-        // Data waktu sholat dari PHP
-        const waktuSholat = <?= json_encode($jadwal) ?>;
+    <!-- Overlay Adzan/Iqamah/Sholat -->
+    <div id="overlay-waktu-sholat" class="fixed inset-0 z-50 hidden bg-gradient-to-b from-black via-gray-900 to-black text-white flex flex-col items-center justify-center transition-all duration-500">
+        <!-- Judul Utama (ADZAN / IQAMAH / SHOLAT) -->
+        <h1 id="judul-overlay" class="text-8xl font-extrabold tracking-wide mb-4 uppercase drop-shadow-2xl animate-pulse">
+            ADZAN
+        </h1>
 
-        const urutan = ['imsak', 'subuh', 'terbit', 'dzuhur', 'ashar', 'maghrib', 'isya'];
-        const labelMap = {
-            imsak: 'Imsak',
-            subuh: 'Subuh',
-            terbit: 'Terbit',
-            dzuhur: 'Dzuhur',
-            ashar: 'Ashar',
-            maghrib: 'Maghrib',
-            isya: 'Isya'
-        };
+        <!-- Nama Waktu Sholat -->
+        <p id="keterangan-overlay" class="text-5xl font-semibold text-yellow-300 drop-shadow-lg mb-6">
+            Shubuh
+        </p>
 
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}`;
-        }
+        <!-- Countdown -->
+        <p id="countdown-overlay" class="text-7xl font-mono font-bold bg-white/10 px-6 py-4 rounded-2xl border border-white/30 shadow-2xl tracking-wider">
+            02:00
+        </p>
 
-        function getNextPrayerTime() {
-            const now = new Date();
-            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        <!-- Quote Ringan -->
+        <div class="mt-12 text-center text-lg text-white/50 italic">
+            <p>“Hayya 'ala ash-shalah... Hayya 'ala al-falah...”</p>
+        </div>
+    </div>
 
-            for (let i = 0; i < urutan.length; i++) {
-                const waktu = waktuSholat[urutan[i]];
-                if (!waktu) continue;
-
-                const [hh, mm] = waktu.split(':').map(Number);
-                const totalMinutes = hh * 60 + mm;
-
-                if (totalMinutes > nowMinutes) {
-                    return {
-                        name: urutan[i],
-                        time: new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0)
-                    };
-                }
-            }
-
-            // fallback ke imsak besok
-            const [hh, mm] = waktuSholat['imsak'].split(':').map(Number);
-            const besok = new Date(now);
-            besok.setDate(besok.getDate() + 1);
-            return {
-                name: 'imsak',
-                time: new Date(besok.getFullYear(), besok.getMonth(), besok.getDate(), hh, mm, 0)
-            };
-        }
-
-        function updateCountdown() {
-            const {
-                name,
-                time
-            } = getNextPrayerTime();
-            const now = new Date();
-            const diff = Math.floor((time - now) / 1000); // dalam detik
-
-            const hours = String(Math.floor(diff / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-            const seconds = String(diff % 60).padStart(2, '0');
-
-            document.getElementById('nextPrayerName').textContent = labelMap[name] ?? name;
-            document.getElementById('countdown').textContent = `${hours}:${minutes}:${seconds}`;
-        }
-
-        function highlightSholatAktif() {
-            const now = new Date();
-            const menitSekarang = now.getHours() * 60 + now.getMinutes();
-
-            let aktifKey = null;
-            for (let i = 0; i < urutan.length; i++) {
-                const key = urutan[i];
-                const waktuAwal = waktuSholat[key];
-                const waktuAkhir = waktuSholat[urutan[i + 1]];
-
-                if (!waktuAwal || !waktuAkhir) continue;
-
-                const [jamAwal, menitAwal] = waktuAwal.split(':').map(Number);
-                const [jamAkhir, menitAkhir] = waktuAkhir.split(':').map(Number);
-
-                const start = jamAwal * 60 + menitAwal;
-                const end = jamAkhir * 60 + menitAkhir;
-
-                if (menitSekarang >= start && menitSekarang < end) {
-                    aktifKey = key;
-                    break;
-                }
-            }
-
-            document.querySelectorAll('[data-key]').forEach(el => {
-                el.classList.remove(
-                    'bg-yellow-200/10',
-                    'ring-2',
-                    'ring-yellow-400',
-                    'animate-pulse',
-                    'shadow-yellow-500',
-                    'shadow-md'
-                );
-            });
-
-            if (aktifKey) {
-                const el = document.querySelector(`[data-key="${aktifKey}"]`);
-                if (el) {
-                    el.classList.add(
-                        'bg-yellow-200/10',
-                        'ring-2',
-                        'ring-yellow-400',
-                        'animate-pulse',
-                        'shadow-yellow-500',
-                        'shadow-md'
-                    );
-                }
-            }
-        }
-
-        // Jalankan semua saat halaman dimuat
-        updateClock();
-        updateCountdown();
-        highlightSholatAktif();
-
-        // Looping terus
-        setInterval(updateClock, 1000);
-        setInterval(updateCountdown, 1000);
-        setInterval(highlightSholatAktif, 60000);
-    </script>
+    <!-- Notifikasi ringan -->
+    <div id="notifikasi-ringkas" class="fixed top-20 right-6 z-40 bg-yellow-400 text-black text-xl font-semibold px-6 py-4 rounded-xl shadow-lg hidden transition-all duration-500">
+        <span id="isi-notifikasi">Notifikasi</span>
+    </div>
 
     <script>
-        // Mapping bulan Hijriyah ke Bahasa Indonesia
-        const bulanHijriyahID = {
-            "Muharram": "Muharram",
-            "Safar": "Safar",
-            "Rabi al-awwal": "Rabiul Awal",
-            "Rabi al-thani": "Rabiul Akhir",
-            "Jumada al-awwal": "Jumadil Awal",
-            "Jumada al-thani": "Jumadil Akhir",
-            "Rajab": "Rajab",
-            "Sha'ban": "Sya'ban",
-            "Ramadan": "Ramadhan",
-            "Shawwal": "Syawal",
-            "Dhul Qa'dah": "Dzulkaidah",
-            "Dhul Hijjah": "Dzulhijjah"
-        };
+        window.addEventListener('DOMContentLoaded', () => {
+            const alamat = document.getElementById('alamatMasjid');
+            const container = alamat.parentElement;
 
-        // Mapping hari ke Bahasa Indonesia
-        const hariID = {
-            "Sunday": "Ahad",
-            "Monday": "Senin",
-            "Tuesday": "Selasa",
-            "Wednesday": "Rabu",
-            "Thursday": "Kamis",
-            "Friday": "Jumat",
-            "Saturday": "Sabtu"
-        };
-
-        // Ambil data hijriyah dan tampilkan gabungan
-        fetch('https://api.aladhan.com/v1/gToH?date=<?= date("d-m-Y") ?>')
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.data && data.data.hijri) {
-                    const hijri = data.data.hijri;
-
-                    const tanggalHijriyah = `${hijri.day} ${bulanHijriyahID[hijri.month.en] ?? hijri.month.en} ${hijri.year} H`;
-
-                    const now = new Date();
-                    const hari = hariID[now.toLocaleDateString('en-US', {
-                        weekday: 'long'
-                    })];
-                    const tanggalMasehi = now.toLocaleDateString('id-ID', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-
-                    const teksGabungan = `${hari}, ${tanggalMasehi} | ${tanggalHijriyah}`;
-                    document.getElementById('tanggal-komplit').textContent = teksGabungan;
-                }
-            })
-            .catch(err => {
-                console.error("Gagal ambil Hijriyah", err);
-                document.getElementById('tanggal-komplit').textContent = "Tanggal tidak tersedia";
-            });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            new Swiper(".mySwiper", {
-                loop: true,
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                effect: "fade",
-                fadeEffect: {
-                    crossFade: true
-                },
-                speed: 1000,
-            });
+            if (alamat.scrollWidth <= container.clientWidth) {
+                alamat.classList.remove('animate-marquee-on-overflow');
+            }
         });
     </script>
 
-    <script>
-        let adzanStartTime = null;
-        let stateAdzan = false;
-        const durasiAdzan = 5 * 60; // 5 menit
-        const durasiIqamah = 5 * 60; // 5 menit
-        let iqamahCountdown = false;
 
-        function cekMasukAdzan() {
-            const now = new Date();
-            const nowMinutes = now.getHours() * 60 + now.getMinutes();
-            const nowSeconds = now.getSeconds();
-
-            for (let i = 0; i < urutan.length; i++) {
-                const waktu = waktuSholat[urutan[i]];
-                if (!waktu) continue;
-
-                const [hh, mm] = waktu.split(':').map(Number);
-                const waktuMenit = hh * 60 + mm;
-
-                // Cek apakah sekarang adalah detik pertama adzan
-                if (nowMinutes === waktuMenit && nowSeconds === 0 && !stateAdzan) {
-                    mulaiAdzan();
-                    break;
-                }
-            }
-
-            if (stateAdzan) {
-                updateAdzanIqamahCountdown();
-            }
-        }
-
-        function mulaiAdzan() {
-            adzanStartTime = new Date();
-            stateAdzan = true;
-            iqamahCountdown = false;
-
-            // Tampilkan overlay
-            document.getElementById('overlayAdzan').classList.remove('hidden');
-            document.getElementById('judulAdzan').textContent = "Adzan";
-
-            playBuzzer();
-        }
-
-        function updateAdzanIqamahCountdown() {
-            const now = new Date();
-            const elapsed = Math.floor((now - adzanStartTime) / 1000);
-
-            if (elapsed < durasiAdzan) {
-                const sisa = durasiAdzan - elapsed;
-                document.getElementById('countdownAdzanIqamah').textContent = formatCountdown(sisa);
-            } else if (!iqamahCountdown) {
-                // Mulai Iqamah
-                adzanStartTime = new Date();
-                iqamahCountdown = true;
-                document.getElementById('judulAdzan').textContent = "Menuju Iqamah";
-            } else {
-                const sisa = durasiIqamah - Math.floor((now - adzanStartTime) / 1000);
-                if (sisa > 0) {
-                    document.getElementById('countdownAdzanIqamah').textContent = formatCountdown(sisa);
-                } else {
-                    // Selesai Iqamah
-                    stateAdzan = false;
-                    iqamahCountdown = false;
-                    document.getElementById('overlayAdzan').classList.add('hidden');
-                }
-            }
-        }
-
-        function playBuzzer() {
-            const audio = document.getElementById("sound-buzzer");
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.warn("Audio tidak dapat diputar:", e));
-            }
-        }
-
-
-        function formatCountdown(detik) {
-            const m = String(Math.floor(detik / 60)).padStart(2, '0');
-            const s = String(detik % 60).padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        setInterval(cekMasukAdzan, 1000);
     </script>
 
 
+    <script>
+        new Swiper('.swiper', {
+            loop: true,
+            autoplay: {
+                delay: 4000
+            },
+            effect: 'fade',
+        });
+
+        const jadwalSholat = <?= json_encode($jadwal) ?>;
+        const waktuAktifOverlay = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
+
+        const durasi = {
+            adzan: {
+                subuh: <?= $pengaturan['durasi_shubuh_adzan'] ?>,
+                dzuhur: <?= $pengaturan['durasi_dzuhur_adzan'] ?>,
+                ashar: <?= $pengaturan['durasi_ashar_adzan'] ?>,
+                maghrib: <?= $pengaturan['durasi_maghrib_adzan'] ?>,
+                isya: <?= $pengaturan['durasi_isya_adzan'] ?>,
+            },
+            iqamah: {
+                subuh: <?= $pengaturan['durasi_shubuh_iqamah'] ?>,
+                dzuhur: <?= $pengaturan['durasi_dzuhur_iqamah'] ?>,
+                ashar: <?= $pengaturan['durasi_ashar_iqamah'] ?>,
+                maghrib: <?= $pengaturan['durasi_maghrib_iqamah'] ?>,
+                isya: <?= $pengaturan['durasi_isya_iqamah'] ?>,
+            },
+            sholat: {
+                subuh: <?= $pengaturan['durasi_shubuh_sholat'] ?>,
+                dzuhur: <?= $pengaturan['durasi_dzuhur_sholat'] ?>,
+                ashar: <?= $pengaturan['durasi_ashar_sholat'] ?>,
+                maghrib: <?= $pengaturan['durasi_maghrib_sholat'] ?>,
+                isya: <?= $pengaturan['durasi_isya_sholat'] ?>,
+            }
+        };
+    </script>
+    <script src="<?= site_url('assets/js/script.js'); ?>"></script>
+    <script src="<?= site_url('assets/js/script-admin.js'); ?>"></script>
+    <script>
+
+    </script>
 </body>
 
 </html>

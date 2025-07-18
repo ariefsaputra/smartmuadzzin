@@ -4,33 +4,33 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Models\PengaturanModel;
-use App\Models\JadwalModel;
+use App\Models\JadwalSholatModel;
 
 class Home extends BaseController
 {
+    protected $pengaturanModel;
+    protected $jadwalModel;
+
+    public function __construct()
+    {
+        $this->pengaturanModel = new PengaturanModel();
+        $this->jadwalModel     = new JadwalSholatModel();
+    }
+
     public function index()
     {
-        $pengaturanModel = new PengaturanModel();
-        $jadwalModel     = new JadwalModel();
+        // Ambil seluruh pengaturan sekali panggil
+        $pengaturan = $this->pengaturanModel->getAllAsKeyValue();
 
-        // Ambil data pengaturan
-        $pengaturan = $pengaturanModel->first();
+        // Ambil jadwal dari DB lokal
+        $jadwal = $this->jadwalModel->getTodaySchedule();
 
-        // Ambil kota_id dan nama masjid dari pengaturan
-        $kota_id      = $pengaturanModel->get('id_kota')      ?? '1219'; // fallback: Bandung
-        $nama_masjid  = $pengaturanModel->get('nama_masjid')  ?? 'Nama Masjid';
-        $running_text = $pengaturanModel->get('running_text') ?? 'Selamat datang di Masjid kami.';
-
-        // Ambil jadwal sholat dari API
-        $jadwal = $jadwalModel->getTodaySchedule($kota_id);
-
-        return view('display/index', [
-            'pengaturan'   => [
-                'kota_id'      => $kota_id,
-                'nama_masjid'  => $nama_masjid,
-                'running_text' => $running_text,
-            ],
+        // Siapkan fallback default
+        $data = [
+            'pengaturan' => $pengaturan,
             'jadwal' => $jadwal
-        ]);
+        ];
+
+        return view('display/index', $data);
     }
 }
