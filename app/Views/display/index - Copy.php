@@ -133,9 +133,11 @@
 
     <!-- FOOTER -->
     <footer class="bg-blue-900 text-white py-3 shadow-inner">
-        <marquee behavior="scroll" direction="left" class="text-xl font-medium tracking-wide">
-            🕌 Selamat Datang di Masjid Al Ukhuwwah Komp. Griya Saluyu | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
-        </marquee>
+        <div class="overflow-hidden whitespace-nowrap">
+            <div class="animate-marquee inline-block">
+                🕌 Selamat Datang di Masjid Al Ukhuwwah Komp. Griya Saluyu | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
+            </div>
+        </div>
     </footer>
 
     <!-- Admin Panel Fullscreen -->
@@ -295,7 +297,7 @@
             }
         });
     </script>
-    
+
     <script>
         new Swiper('.swiper', {
             loop: true,
