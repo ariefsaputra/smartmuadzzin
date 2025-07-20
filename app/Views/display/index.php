@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="<?= site_url('assets/css/swiper-bundle.min.css'); ?>" />
     <script src="<?= site_url('assets/js/swiper-bundle.min.js'); ?>"></script>
     <link rel="stylesheet" href="<?= site_url('assets/css/style.css'); ?>">
+
+    <style>
+        .night-mode {
+            filter: brightness(0.4) contrast(0.8);
+            transition: filter 1s ease;
+        }
+    </style>
+
 </head>
 
 <body class="h-full w-full bg-sky-100 text-slate-800 font-sans">
@@ -295,7 +303,7 @@
             }
         });
     </script>
-    
+
     <script>
         new Swiper('.swiper', {
             loop: true,
@@ -335,8 +343,44 @@
     <script src="<?= site_url('assets/js/script.js'); ?>"></script>
     <script src="<?= site_url('assets/js/script-admin.js'); ?>"></script>
     <script>
+        function cekModeMalam() {
+            const now = new Date();
+            const jam = now.getHours();
 
+            const body = document.body;
+
+            // Aktifkan night-mode dari jam 19:00 s.d. 04:59
+            if (jam >= 22 || jam < 3) {
+                body.classList.add("night-mode");
+            } else {
+                body.classList.remove("night-mode");
+            }
+        }
+
+        // Jalankan saat awal
+        cekModeMalam();
+
+        // Cek ulang setiap 5 menit
+        setInterval(cekModeMalam, 5 * 60 * 1000);
     </script>
+
+    <script>
+        function cekJamTengahMalam() {
+            const now = new Date();
+            const jam = now.getHours();
+            const menit = now.getMinutes();
+
+            if (jam === 0 && menit === 0) {
+                console.log("⏰ Pukul 00:00 terdeteksi, reload halaman...");
+                location.reload();
+            }
+        }
+
+        // Jalankan setiap 1 menit
+        setInterval(cekJamTengahMalam, 60 * 1000);
+    </script>
+
+
 </body>
 
 </html>
