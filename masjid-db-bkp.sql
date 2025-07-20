@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `jadwal_sholat` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `tanggal` (`tanggal`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table smartmuadzzin.jadwal_sholat: ~31 rows (approximately)
 DELETE FROM `jadwal_sholat`;
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `pengaturan` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`kunci`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table smartmuadzzin.pengaturan: ~20 rows (approximately)
 DELETE FROM `pengaturan`;
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `posters` (
   `aktif` tinyint(1) DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table smartmuadzzin.posters: ~0 rows (approximately)
 DELETE FROM `posters`;
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `running_text` (
   `isi` text NOT NULL,
   `aktif` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table smartmuadzzin.running_text: ~2 rows (approximately)
 DELETE FROM `running_text`;
