@@ -116,10 +116,11 @@ function tampilkanOverlay(jenis, waktuSholat) {
             tampilkanOverlay('sholat', waktuSholat);
         });
     } else if (jenis === 'sholat') {
+        mainkanAlarm(0.8);
         countdownOverlay.textContent = '';
-        countdownDurasi(durasi.sholat[waktuSholat], () => {
+        overlayTimer = setTimeout(() => {
             overlay.classList.add('hidden');
-        });
+        }, durasi.sholat[waktuSholat] * 1000);
     }
 }
 
