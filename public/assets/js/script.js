@@ -117,6 +117,8 @@ function tampilkanOverlay(jenis, waktuSholat) {
         });
     } else if (jenis === 'sholat') {
         mainkanAlarm(0.8);
+        judulOverlay.textContent = 'WAKTU SHOLAT';
+        keteranganOverlay.textContent = 'Harap Tenang';
         countdownOverlay.textContent = '';
         overlayTimer = setTimeout(() => {
             overlay.classList.add('hidden');
