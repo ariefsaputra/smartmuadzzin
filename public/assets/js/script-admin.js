@@ -91,7 +91,7 @@ function syncHariIni() {
     }, 100);
 
     fetch('/jadwal/sync/harian', {
-        method: 'POST'
+        method: 'GET'
     })
         .then(res => res.json())
         .then(json => {
@@ -114,7 +114,7 @@ function syncSebulan() {
     }, 100);
 
     fetch('/jadwal/sync/bulanan', {
-        method: 'POST'
+        method: 'GET'
     })
         .then(res => res.json())
         .then(json => {
@@ -137,7 +137,7 @@ function syncSetahun() {
     }, 100);
 
     fetch('/jadwal/sync/tahunan', {
-        method: 'POST'
+        method: 'GET'
     })
         .then(res => res.json())
         .then(json => {

@@ -13,9 +13,9 @@ $routes->group('pengaturan', function($routes) {
 });
 
 $routes->group('jadwal', function($routes) {
-    $routes->post('sync/harian', 'JadwalController::syncHarian');
-    $routes->post('sync/bulanan', 'JadwalController::syncBulanan');
-    $routes->post('sync/tahunan', 'JadwalController::syncTahunan');
+    $routes->get('sync/harian', 'JadwalController::syncHarian');
+    $routes->get('sync/bulanan', 'JadwalController::syncBulanan');
+    $routes->get('sync/tahunan', 'JadwalController::syncTahunan');
 });
 
 $routes->get('/sync-jadwal/(:segment)', 'Home::syncJadwal/$1');
