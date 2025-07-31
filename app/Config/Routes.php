@@ -18,3 +18,5 @@ $routes->group('jadwal', function($routes) {
     $routes->post('sync/tahunan', 'JadwalController::syncTahunan');
 });
 
+$routes->get('/sync-jadwal/(:segment)', 'Home::syncJadwal/$1');
+

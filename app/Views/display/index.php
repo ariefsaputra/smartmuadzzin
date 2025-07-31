@@ -230,6 +230,15 @@
                             📆 Sinkron 1 Tahun
                         </button>
 
+                        <!-- Progress bar -->
+                        <div id="progress-container" class="hidden mt-4">
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div id="progress-bar" class="bg-blue-600 h-4 text-xs text-white text-center rounded-full transition-all duration-200 ease-in-out" style="width: 0%">0%</div>
+                            </div>
+                        </div>
+
+
+
                         <div class="mt-4 bg-gray-100 p-4 rounded border text-sm text-gray-700">
                             <strong>Status:</strong> Jadwal terakhir diupdate <span id="lastUpdate">-</span>
                         </div>

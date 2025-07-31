@@ -33,4 +33,33 @@ class Home extends BaseController
 
         return view('display/index', $data);
     }
+
+    public function syncJadwal($jenis = 'harian')
+    {
+        $jadwalController = new \App\Controllers\JadwalController();
+
+        switch ($jenis) {
+            case 'harian':
+                $hasil = $jadwalController->syncHarian();
+                break;
+            case 'bulanan':
+                $hasil = $jadwalController->syncBulanan();
+                break;
+            case 'tahunan':
+                $hasil = $jadwalController->syncTahunan();
+                break;
+            default:
+                echo json_encode([
+                    'status' => false,
+                    'message' => 'Jenis sinkronisasi tidak dikenal.'
+                ], JSON_PRETTY_PRINT);
+                return;
+        }
+
+        echo json_encode([
+            'status' => true,
+            'message' => "Sinkronisasi $jenis berhasil.",
+            'data' => $hasil
+        ], JSON_PRETTY_PRINT);
+    }
 }

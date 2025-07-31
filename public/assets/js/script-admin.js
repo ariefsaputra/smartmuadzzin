@@ -80,26 +80,87 @@ function simpanPengaturan() {
 
 // SYNCRONIZE JADWAL SHOLAT
 function syncHariIni() {
+    showProgressBar();
+
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (progress < 95) {
+            progress += Math.floor(Math.random() * 5) + 1;
+            updateProgressBar(Math.min(progress, 95));
+        }
+    }, 100);
+
     fetch('/jadwal/sync/harian', {
         method: 'POST'
     })
         .then(res => res.json())
-        .then(json => alert(json.message));
+        .then(json => {
+            clearInterval(interval);
+            updateProgressBar(100);
+            setTimeout(() => hideProgressBar(), 1000);
+            alert(json.message);
+        });
 }
 
 function syncSebulan() {
+    showProgressBar();
+
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (progress < 95) {
+            progress += Math.floor(Math.random() * 5) + 1;
+            updateProgressBar(Math.min(progress, 95));
+        }
+    }, 100);
+
     fetch('/jadwal/sync/bulanan', {
         method: 'POST'
     })
         .then(res => res.json())
-        .then(json => alert(json.message));
+        .then(json => {
+            clearInterval(interval);
+            updateProgressBar(100);
+            setTimeout(() => hideProgressBar(), 1000);
+            alert(json.message);
+        });
 }
 
 function syncSetahun() {
+    showProgressBar();
+
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (progress < 95) {
+            progress += Math.floor(Math.random() * 5) + 1;
+            updateProgressBar(Math.min(progress, 95));
+        }
+    }, 100);
+
     fetch('/jadwal/sync/tahunan', {
         method: 'POST'
     })
         .then(res => res.json())
-        .then(json => alert(json.message));
+        .then(json => {
+            clearInterval(interval);
+            updateProgressBar(100);
+            setTimeout(() => hideProgressBar(), 1000);
+            alert(json.message);
+        });
 }
+
+function showProgressBar() {
+    document.getElementById('progress-container').classList.remove('hidden');
+    updateProgressBar(0);
+}
+
+function hideProgressBar() {
+    document.getElementById('progress-container').classList.add('hidden');
+}
+
+function updateProgressBar(persen) {
+    const bar = document.getElementById('progress-bar');
+    bar.style.width = `${persen}%`;
+    bar.textContent = `${persen}%`;
+}
+
 // END -- ADMIN PANEL
