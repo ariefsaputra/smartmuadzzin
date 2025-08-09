@@ -50,3 +50,30 @@ body {
     white-space: nowrap;
     animation: marquee 15s linear infinite;
 }
+
+/* MODE MALAM */
+.night-mode {
+    filter: brightness(0.4) contrast(0.8);
+    transition: filter 1s ease;
+}
+
+/* EFEK NAMA MASJID */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-dynamic {
+    background: linear-gradient(270deg, rgba(180, 83, 9, 0.9), rgba(202, 138, 4, 0.8), rgba(180, 83, 9, 0.9));
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease infinite;
+}

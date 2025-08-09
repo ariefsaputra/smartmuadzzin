@@ -140,6 +140,37 @@ function countdownDurasi(seconds, callback) {
     }, 1000);
 }
 
+//
+function getNextSholatTime(jadwal) {
+    const now = new Date();
+    const times = [
+        { name: "Imsak", time: jadwal.imsak },
+        { name: "Shubuh", time: jadwal.subuh },
+        { name: "Syuruq", time: jadwal.syuruq },
+        { name: "Dhuha", time: jadwal.dhuha },
+        { name: "Dzuhur", time: jadwal.dzuhur },
+        { name: "Ashar", time: jadwal.ashar },
+        { name: "Maghrib", time: jadwal.maghrib },
+        { name: "Isya", time: jadwal.isya },
+    ];
+
+    for (let i = 0; i < times.length; i++) {
+        const [h, m] = times[i].time.split(":");
+        const sholatDate = new Date();
+        sholatDate.setHours(h, m, 0, 0);
+        if (sholatDate > now) {
+            return { name: times[i].name, date: sholatDate };
+        }
+    }
+
+    // Jika semua sudah lewat, ambil jadwal pertama besok
+    const [h, m] = times[0].time.split(":");
+    const besok = new Date();
+    besok.setDate(besok.getDate() + 1);
+    besok.setHours(h, m, 0, 0);
+    return { name: times[0].name, date: besok };
+}
+
 function updateCountdown(s) {
     const m = String(Math.floor(s / 60)).padStart(2, '0');
     const d = String(s % 60).padStart(2, '0');
