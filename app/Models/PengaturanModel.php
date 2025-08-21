@@ -60,4 +60,15 @@ class PengaturanModel extends Model
         }
         return true;
     }
+
+    public function saveOrUpdate($kunci, $nilai)
+    {
+        $exists = $this->where('kunci', $kunci)->first();
+
+        if ($exists) {
+            return $this->update($kunci, ['nilai' => $nilai]);
+        } else {
+            return $this->insert(['kunci' => $kunci, 'nilai' => $nilai]);
+        }
+    }
 }

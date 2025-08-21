@@ -69,6 +69,9 @@
                     <img src="<?= site_url('assets/img/2.jpg'); ?>" class="object-cover w-full h-full" />
                 </div>
                 <div class="swiper-slide">
+                    <img src="<?= site_url('assets/img/2-2.jpg'); ?>" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
                     <img src="<?= site_url('assets/img/3.jpg'); ?>" class="object-cover w-full h-full" />
                 </div>
                 <div class="swiper-slide">

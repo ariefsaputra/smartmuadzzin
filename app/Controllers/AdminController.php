@@ -7,9 +7,16 @@ use App\Models\SliderModel;
 
 class AdminController extends BaseController
 {
+    protected $pengaturanModel;
+    
+    public function __construct()
+    {
+        $this->pengaturanModel = new PengaturanModel();
+    }
+
     public function index()
     {
-        $pengaturan = (new PengaturanModel())->first();
+        $pengaturan = (new PengaturanModel())->getAllAsKeyValue();
         $slider = (new SliderModel())->findAll();
 
         return view('admin/index', [
@@ -18,15 +25,23 @@ class AdminController extends BaseController
         ]);
     }
 
-    public function saveMasjid()
+    public function savePengaturan()
     {
-        $data = $this->request->getPost();
-        (new PengaturanModel())->update(1, [
-            'nama_masjid' => $data['nama_masjid'],
-            'alamat_masjid' => $data['alamat_masjid'],
-            'id_kota' => $data['id_kota']
+        $data = [
+            'nama_masjid'    => $this->request->getPost('nama_masjid'),
+            'alamat_masjid'  => $this->request->getPost('alamat_masjid'),
+            'id_kota'        => $this->request->getPost('id_kota'),
+            'running_text'   => $this->request->getPost('running_text'),
+        ];
+
+        foreach ($data as $kunci => $nilai) {
+            $this->pengaturanModel->saveOrUpdate($kunci, $nilai);
+        }
+
+        return $this->response->setJSON([
+            'status'  => true,
+            'message' => 'Pengaturan berhasil disimpan.'
         ]);
-        return redirect()->back()->with('success', 'Informasi masjid diperbarui.');
     }
 
     public function saveRunningText()

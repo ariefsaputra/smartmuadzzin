@@ -33,4 +33,5 @@ class PengaturanController extends BaseController
 
         return $this->response->setJSON(['status' => true, 'message' => 'Pengaturan berhasil disimpan']);
     }
+    
 }

@@ -34,13 +34,13 @@
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">Alamat Masjid</label>
-                    <textarea name="alamat_masjid" class="w-full border rounded p-2"><?= esc($pengaturan['alamat_masjid'] ?? '') ?></textarea>
+                    <textarea name="alamat_masjid" class="w-full border rounded p-2"><?= esc($pengaturan['alamat'] ?? '') ?></textarea>
                 </div>
                 <div>
                     <label class="block mb-1 font-semibold">ID Kota Masjid</label>
                     <select id="id_kota" name="id_kota" class="w-full border rounded p-2"></select>
                 </div>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+                <button type="submit" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
             </form>
         </div>
 
@@ -77,31 +77,53 @@
 
     <script>
         $(document).ready(function() {
-            $('#id_kota').select2({
-                placeholder: 'Pilih Kota',
-                ajax: {
-                    url: 'https://api.myquran.com/v2/sholat/kota/semua',
-                    dataType: 'json',
-                    processResults: function(data) {
+            let kotaList = [];
+            let selectedIdKota = "<?= esc($pengaturan['id_kota'] ?? '') ?>";
+
+            $.getJSON('https://api.myquran.com/v2/sholat/kota/semua', function(response) {
+                if (response && response.data) {
+                    kotaList = response.data.map(function(kota) {
                         return {
-                            results: data.map(function(kota) {
-                                return {
-                                    id: kota.id,
-                                    text: kota.lokasi
-                                };
-                            })
+                            id: kota.id,
+                            text: kota.lokasi
                         };
+                    });
+
+                    $('#id_kota').select2({
+                        placeholder: 'Pilih Kota',
+                        data: kotaList,
+                        matcher: function(params, data) {
+                            if ($.trim(params.term) === '') return data;
+                            if (typeof data.text === 'undefined') return null;
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) return data;
+                            return null;
+                        }
+                    });
+
+                    // Set default selected jika ada
+                    if (selectedIdKota) {
+                        $('#id_kota').val(selectedIdKota).trigger('change');
                     }
                 }
             });
+        });
 
-            // Set value jika sudah ada
-            let selectedId = "<?= esc($pengaturan['id_kota'] ?? '') ?>";
-            let selectedText = "<?= esc($pengaturan['nama_kota'] ?? '') ?>";
-            if (selectedId && selectedText) {
-                let option = new Option(selectedText, selectedId, true, true);
-                $('#id_kota').append(option).trigger('change');
-            }
+        // SAVE PENGATURAN
+        $('#btn-save').click(function() {
+            let formData = {
+                nama_masjid: $('input[name="nama_masjid"]').val(),
+                alamat: $('textarea[name="alamat_masjid"]').val(),
+                id_kota: $('#id_kota').val(),
+                running_text: $('textarea[name="running_text"]').val(),
+            };
+
+            $.post('/admin/savePengaturan', formData, function(res) {
+                if (res.status) {
+                    alert(res.message);
+                } else {
+                    alert('Gagal menyimpan pengaturan');
+                }
+            }, 'json');
         });
     </script>
 
