@@ -14,7 +14,7 @@
 
 <body class="h-full w-full bg-sky-100 text-slate-800 font-sans">
     <!-- HEADER -->
-    <header class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center shadow-xl">
+    <header class="bg-amber-900 text-white px-6 py-4 grid grid-cols-[auto_50%_auto] items-center shadow-xl">
         <!-- Jam Digital -->
         <div id="jam-digital" class="text-7xl font-bold tracking-widest flex items-center gap-1">
             <span id="jam">00</span>
@@ -22,37 +22,49 @@
             <span id="menit">00</span>
         </div>
 
-        <div class="text-center max-w-full">
-            <!-- Nama Masjid -->
-            <h1 class="text-4xl font-bold uppercase tracking-wide text-white drop-shadow-md">
-                <?= esc($pengaturan['nama_masjid'] ?? 'Nama Masjid') ?>
-            </h1>
-
-            <!-- Alamat Masjid -->
-            <div class="mt-1 overflow-hidden whitespace-nowrap relative h-8">
-                <p id="alamatMasjid"
-                    class="text-xl font-medium text-white/90 inline-block px-4 animate-marquee-on-overflow">
-                    <?= esc($pengaturan['alamat'] ?? 'Alamat Masjid') ?>
-                </p>
+        <!-- Nama & Alamat Masjid -->
+        <div class="text-center w-full">
+            <div class="gradient-dynamic backdrop-blur-sm rounded-xl shadow-lg px-4 py-2 border border-amber-500/40 inline-block w-full">
+                <!-- Nama Masjid -->
+                <h1 class="text-4xl font-bold uppercase tracking-wide text-white drop-shadow-md truncate">
+                    <?= esc($pengaturan['nama_masjid'] ?? 'Nama Masjid') ?>
+                </h1>
+                <!-- Alamat Masjid -->
+                <div class="mt-1 overflow-hidden whitespace-nowrap relative h-8">
+                    <p id="alamatMasjid"
+                        class="text-xl font-medium text-white/90 inline-block px-4 animate-marquee-on-overflow">
+                        <?= esc($pengaturan['alamat'] ?? 'Alamat Masjid') ?>
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- Hari & Tanggal -->
         <div
             x-data="{
-                tanggalM: '',
-                tanggalH: '<?= esc($jadwal['tanggal_hijriyah'] ?? 'Hijriyah') ?>', // ← nanti bisa diganti otomatis
-                init() {
-                const now = new Date();
-                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                this.tanggalM = now.toLocaleDateString('id-ID', options);
-                }
-            }"
+        tanggalM: '',
+        tanggalH: '<?= esc($jadwal['tanggal_hijriyah'] ?? 'Hijriyah') ?>',
+        init() {
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            this.tanggalM = now.toLocaleDateString('id-ID', options);
+        }
+    }"
             x-init="init()"
-            class="text-right leading-tight">
-            <p x-text="tanggalM" class="text-3xl font-bold"></p>
-            <p x-text="tanggalH" class="text-2xl italic text-white/70"></p>
+            class="text-right leading-tight space-y-2">
+            <!-- Tanggal Masehi -->
+            <p x-text="tanggalM"
+                class="text-2xl font-extrabold text-gray-100 italic tracking-wide
+              drop-shadow-[3px_3px_6px_rgba(0,0,0,0.7)]">
+            </p>
+
+            <!-- Tanggal Hijriyah -->
+            <p x-text="tanggalH"
+                class="text-3xl font-bold text-green-300 italic tracking-wide
+              drop-shadow-[2px_2px_6px_rgba(0,0,0,0.8)]">
+            </p>
         </div>
+
     </header>
 
     <!-- MAIN SLIDER -->
@@ -61,7 +73,19 @@
         <div class="swiper h-full">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
-                    <img src="<?= site_url('assets/img/foto-masjid.jpg'); ?>" class="object-cover w-full h-full" />
+                    <img src="<?= site_url('assets/img/1.jpg'); ?>" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="<?= site_url('assets/img/2.jpg'); ?>" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="<?= site_url('assets/img/2-2.jpg'); ?>" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="<?= site_url('assets/img/3.jpg'); ?>" class="object-cover w-full h-full" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="<?= site_url('assets/img/4.jpg'); ?>" class="object-cover w-full h-full" />
                 </div>
             </div>
         </div>
@@ -133,11 +157,9 @@
 
     <!-- FOOTER -->
     <footer class="bg-blue-900 text-white py-3 shadow-inner">
-        <div class="overflow-hidden whitespace-nowrap">
-            <div class="animate-marquee inline-block">
-                🕌 Selamat Datang di Masjid Al Ukhuwwah Komp. Griya Saluyu | 📅 Jadwal Sholat Hari Ini | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
-            </div>
-        </div>
+        <marquee behavior="scroll" direction="left" class="text-xl font-medium tracking-wide">
+            🕌 Selamat Datang di Masjid Al Ukhuwwah Komp. Griya Saluyu | 🧼 Jaga Kebersihan • 🤲 Jaga Kekhusyukan • 📢 Adzan akan berkumandang tepat waktu
+        </marquee>
     </footer>
 
     <!-- Admin Panel Fullscreen -->
@@ -214,6 +236,15 @@
                         <button onclick="syncSetahun()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded w-full">
                             📆 Sinkron 1 Tahun
                         </button>
+
+                        <!-- Progress bar -->
+                        <div id="progress-container" class="hidden mt-4">
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div id="progress-bar" class="bg-blue-600 h-4 text-xs text-white text-center rounded-full transition-all duration-200 ease-in-out" style="width: 0%">0%</div>
+                            </div>
+                        </div>
+
+
 
                         <div class="mt-4 bg-gray-100 p-4 rounded border text-sm text-gray-700">
                             <strong>Status:</strong> Jadwal terakhir diupdate <span id="lastUpdate">-</span>
@@ -302,13 +333,12 @@
         new Swiper('.swiper', {
             loop: true,
             autoplay: {
-                delay: 4000
+                delay: 10000
             },
             effect: 'fade',
         });
 
         const jadwalSholat = <?= json_encode($jadwal) ?>;
-        const waktuAktifOverlay = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
 
         const durasi = {
             adzan: {
@@ -336,9 +366,6 @@
     </script>
     <script src="<?= site_url('assets/js/script.js'); ?>"></script>
     <script src="<?= site_url('assets/js/script-admin.js'); ?>"></script>
-    <script>
-
-    </script>
 </body>
 
 </html>

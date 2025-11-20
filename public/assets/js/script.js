@@ -239,15 +239,44 @@ setInterval(() => {
     cekWaktuNonOverlay();
 }, 1000);
 
-// ========== RELOAD TENGAH MALAM ==========
+function syncHarianDanReload(retry = 0) {
+    fetch("/jadwal/sync/harian", {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-cache"
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Gagal ambil data: " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("✅ Data harian berhasil diambil:", data);
+            console.log("🔄 Reload halaman setelah sinkronisasi...");
+            location.reload();
+        })
+        .catch(error => {
+            console.error(`❌ Error fetch (percobaan ${retry + 1}):`, error);
+
+            if (retry < 2) { // max 3 kali (0,1,2)
+                console.log("⏳ Coba ulang dalam 5 detik...");
+                setTimeout(() => syncHarianDanReload(retry + 1), 5000);
+            } else {
+                console.error("🚨 Gagal sync setelah 3 percobaan. Reload dibatalkan.");
+            }
+        });
+}
+
 function cekJamTengahMalam() {
     const now = new Date();
     const jam = now.getHours();
     const menit = now.getMinutes();
 
     if (jam === 0 && menit === 0) {
-        console.log("⏰ Pukul 00:00 terdeteksi, reload halaman...");
-        location.reload();
+        console.log("⏰ Pukul 00:00 terdeteksi, mulai tarik data harian...");
+        syncHarianDanReload();
     }
 }
 

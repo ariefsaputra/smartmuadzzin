@@ -21,7 +21,7 @@ class Home extends BaseController
     {
         // Ambil seluruh pengaturan sekali panggil
         $pengaturan = $this->pengaturanModel->getAllAsKeyValue();
-
+        
         // Ambil jadwal dari DB lokal
         $jadwal = $this->jadwalModel->getTodaySchedule();
 
