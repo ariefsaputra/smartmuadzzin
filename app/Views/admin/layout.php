@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <title><?= $title ?? 'Admin — SMARTMUADZZIN' ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3" defer></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="<?= site_url('assets/js/tailwindcss.js'); ?>"></script>
+    <link rel="stylesheet" href="<?= site_url('assets/icons/phosphor/style.css'); ?>">
+
+    <script src="<?= site_url('assets/js/alpine.min.js'); ?>" defer></script>
 
     <style>
         body {
