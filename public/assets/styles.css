@@ -847,3 +847,82 @@ body.friday .clock-big {
     rgba(0,0,0,0.7) 100%
   );
 }
+
+/* ======================================================
+   TV DISPLAY SCALE — Optimized for 43 inch
+   ====================================================== */
+
+@media (min-width: 1280px) {
+
+  /* =========================
+     PERSISTENT PRAYER FOOTER
+     ========================= */
+  #persistentPrayer {
+      bottom: 90px;                 /* lebih naik dari running text */
+      max-width: 1600px;
+  }
+
+  #persistentPrayer .prayer-grid {
+      gap: 18px;
+      padding: 14px;
+  }
+
+  #persistentPrayer .prayer-premium {
+      padding: 22px 14px;
+      border-radius: 18px;
+  }
+
+  #persistentPrayer .prayer-premium .label {
+      font-size: 1.4rem;            /* ⬆ jelas terbaca */
+      letter-spacing: 0.6px;
+  }
+
+  #persistentPrayer .prayer-premium .time {
+      font-size: 2.8rem;            /* ⬆ DOMINAN */
+      margin-top: 6px;
+  }
+
+  #persistentPrayer .prayer-premium.active-prayer {
+      transform: translateY(-10px) scale(1.06);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.65);
+  }
+
+  /* =========================
+     RUNNING TEXT (BOTTOM)
+     ========================= */
+  #runningBar {
+      height: 80px;                 /* ⬆ tinggi bar */
+      padding-left: 32px;
+      border-top: 2px solid rgba(255,255,255,0.18);
+  }
+
+  #runningText {
+      font-size: 2.8rem;            /* ⬆ besar & tebal */
+      font-weight: 600;
+      letter-spacing: 1px;
+      animation-duration: 40s;      /* lebih santai di TV */
+  }
+
+}
+@media (min-width: 1280px) {
+  .mode1-content {
+      padding-bottom: 200px;
+  }
+
+  .container-full {
+      padding-bottom: 200px;
+  }
+}
+@media (min-width: 1280px) {
+  .mode2-clock-text {
+      font-size: 5rem;
+  }
+
+  .mode2-day {
+      font-size: 2.2rem;
+  }
+
+  .mode2-date {
+      font-size: 1.4rem;
+  }
+}
