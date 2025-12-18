@@ -926,3 +926,84 @@ body.friday .clock-big {
       font-size: 1.4rem;
   }
 }
+
+/* ======================================================
+   MODE 3 — FULLSCREEN ANNOUNCEMENT (TV OPTIMIZED)
+   Target: TV 43–55 inch
+   ====================================================== */
+
+@media (min-width: 1280px) {
+
+  /* Wrapper utama */
+  .mode3-wrapper {
+      max-width: 1600px;          /* sebelumnya 1200px */
+      width: calc(100% - 120px);  /* lebih lapang */
+      margin: 0 auto;
+  }
+
+  /* Glass card */
+  .mode3-wrapper > div {
+      padding: 48px 56px;         /* ⬆ jauh lebih lega */
+      border-radius: 28px;
+      box-shadow:
+          0 20px 60px rgba(0,0,0,0.55),
+          inset 0 0 0 1px rgba(255,255,255,0.15);
+  }
+
+  /* =========================
+     JUDUL PENGUMUMAN
+     ========================= */
+  .ann-title {
+      font-size: clamp(48px, 4.2vw, 64px);
+      line-height: 1.2;
+      margin-bottom: 32px;
+      letter-spacing: 0.5px;
+      text-align: center;
+      text-shadow:
+          0 0 18px rgba(0,0,0,0.55),
+          0 0 32px rgba(0,170,255,0.25);
+  }
+
+  /* =========================
+     ISI PENGUMUMAN (UMUM)
+     ========================= */
+  .ann-content {
+      font-size: clamp(26px, 2.4vw, 34px);
+      line-height: 1.7;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      letter-spacing: 0.3px;
+      text-shadow:
+          0 0 12px rgba(0,0,0,0.45);
+  }
+
+  /* =========================
+     TABEL (KEUANGAN / DATA)
+     ========================= */
+  .ann-table {
+      width: 100%;
+      max-width: 1200px;
+      margin: 32px auto 0;
+  }
+
+  .ann-table th {
+      font-size: 1.6rem;
+      padding: 18px 16px;
+  }
+
+  .ann-table td {
+      font-size: 1.55rem;
+      padding: 18px 16px;
+  }
+
+  /* =========================
+     LIST (IMAM / KHATIB)
+     ========================= */
+  .ann-content .text-2xl {
+      font-size: 2.2rem;
+      line-height: 1.6;
+      text-align: center;
+  }
+
+}
