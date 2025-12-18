@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title><?= $data['nama_masjid'] ?> — SMARTMUADZZIN</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3" defer></script>
+    <script src="<?= site_url('assets/js/tailwindcss.js'); ?>"></script>
+    <script src="<?= site_url('assets/js/alpine.min.js'); ?>" defer></script>
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('clock', {
