@@ -1,0 +1,849 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #0a0f1c;
+    color: white;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.container-full {
+    position: absolute;
+    inset: 0;
+    transition: .7s ease;
+    opacity: 0;
+    filter: blur(6px);
+}
+
+.show {
+    opacity: 1;
+    filter: blur(0);
+}
+
+.hide {
+    opacity: 0;
+    filter: blur(6px);
+}
+
+/* ============================
+        MODE 1 BACKGROUND IMAGE
+        ============================ */
+.bg-mode1 {
+    position: absolute;
+    inset: 0;
+    background-image: url('bg/mosque-bg-spesial.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* filter: brightness(0.75); */
+    z-index: 0;
+}
+
+/* Layer konten mode 1 supaya di atas background */
+.mode1-content {
+    position: relative;
+    z-index: 2;
+}
+
+.title-card {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 18px 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: inline-block;
+    margin: auto;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes titleFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title-anim {
+    animation: titleFadeIn 0.8s ease-out forwards;
+}
+
+/* CLOCK BIG — Premium TV Style */
+.clock-big {
+    font-size: 8vw;
+    /* lebih besar */
+    font-weight: 900;
+    letter-spacing: .08em;
+    color: #ffffff;
+    text-shadow:
+        0 0 12px rgba(255, 255, 255, 0.35),
+        0 0 24px rgba(0, 170, 255, 0.45),
+        0 0 42px rgba(0, 170, 255, 0.35),
+        2px 2px 12px rgba(0, 0, 0, 0.6);
+    /* shadow gelap membuat efek timbul */
+    transform: translateY(-10px);
+    /* sedikit naik supaya center tampak lebih proporsional */
+}
+
+body.friday .clock-big {
+    text-shadow:
+        0 0 12px rgba(255, 215, 0, 0.4),
+        0 0 26px rgba(255, 185, 0, 0.55),
+        0 0 38px rgba(255, 185, 0, 0.4);
+    color: #fff9d7;
+}
+
+
+.date-card {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 26px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: inline-block;
+    margin-top: 24px;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.date-masehi {
+    font-size: 2.3vw;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+.date-hijri {
+    margin-top: 6px;
+    font-size: 1.7vw;
+    font-weight: 500;
+    color: #e8f7ff;
+    opacity: .92;
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+
+
+.running-bar {
+    background: rgba(0, 0, 0, 0.55);
+    /* Lebih gelap */
+    backdrop-filter: blur(6px);
+    /* Blur lembut */
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* PREMIUM PRAYER CARD */
+.prayer-premium {
+    padding: 16px 10px;
+    text-align: center;
+    border-radius: 14px;
+    background: #ffffffee;
+    border: 3px solid transparent;
+    transition: .35s ease;
+    color: #2c2c2c;
+}
+
+.prayer-premium .label {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.prayer-premium .time {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: .95;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 6px rgba(255, 255, 255, .35);
+    }
+
+    50% {
+        box-shadow: 0 0 24px rgba(255, 255, 255, .55);
+    }
+
+    100% {
+        box-shadow: 0 0 6px rgba(255, 255, 255, .35);
+    }
+}
+
+.prayer-premium.active-prayer {
+    animation: glowPulse 2.2s ease-in-out infinite;
+    color: #000;
+    transform: translateY(-3px);
+}
+
+/* Colors */
+.p-imsak {
+    border-color: #38e6ff;
+}
+
+.p-subuh {
+    border-color: #6d78ff;
+}
+
+.p-syuruq {
+    border-color: #ffe48f;
+}
+
+.p-dhuha {
+    border-color: #ffd54f;
+}
+
+.p-dzuhur {
+    border-color: #4fffac;
+}
+
+.p-ashar {
+    border-color: #ffb444;
+}
+
+.p-maghrib {
+    border-color: #ff784e;
+}
+
+.p-isya {
+    border-color: #b38bff;
+}
+
+.active-prayer.p-imsak {
+    background: #38e6ff;
+}
+
+.active-prayer.p-subuh {
+    background: #6d78ff;
+}
+
+.active-prayer.p-syuruq {
+    background: #ffe48f;
+}
+
+.active-prayer.p-dhuha {
+    background: #ffd54f;
+}
+
+.active-prayer.p-dzuhur {
+    background: #4fffac;
+}
+
+.active-prayer.p-ashar {
+    background: #ffb444;
+}
+
+.active-prayer.p-maghrib {
+    background: #ff784e;
+}
+
+.active-prayer.p-isya {
+    background: #b38bff;
+}
+
+/** Mode 2 */
+.mode2-card {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ANIMASI CARD MODE 2 */
+@keyframes cardFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardFadeDown {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+}
+
+.mode2-card-anim {
+    animation: cardFadeUp 0.7s ease-out forwards;
+}
+
+.mode2-card-hide {
+    animation: cardFadeDown 0.4s ease-in forwards;
+}
+
+.mode2-day {
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(0, 0, 0, 0.35);
+}
+
+.mode2-hijri {
+    text-shadow:
+        0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+.mode2-date {
+    text-shadow:
+        0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Special tightening for clock card */
+.mode2-clock-card {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+/* Clock text adjustment */
+.mode2-clock-text {
+    font-size: 4.2rem;
+    /* sebelumnya 5xl (≈4.5rem) */
+    line-height: 1;
+    /* lebih rapat */
+    margin: 0;
+    padding: 0;
+    text-shadow:
+        0 0 10px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Mode 3 Table Styling */
+.ann-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ann-table th,
+.ann-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ann-table th {
+    text-align: left;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.ann-table td {
+    color: #e8f8ff;
+    font-size: 1.15rem;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #0a0f1c;
+    color: white;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.container-full {
+    position: absolute;
+    inset: 0;
+    transition: .7s ease;
+    opacity: 0;
+    filter: blur(6px);
+}
+
+.show {
+    opacity: 1;
+    filter: blur(0);
+}
+
+.hide {
+    opacity: 0;
+    filter: blur(6px);
+}
+
+/* ============================
+        MODE 1 BACKGROUND IMAGE
+        ============================ */
+.bg-mode1 {
+    position: absolute;
+    inset: 0;
+    background-image: url('bg/mosque-bg-spesial.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* filter: brightness(0.75); */
+    z-index: 0;
+}
+
+/* Layer konten mode 1 supaya di atas background */
+.mode1-content {
+    position: relative;
+    z-index: 2;
+}
+
+.title-card {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 18px 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: inline-block;
+    margin: auto;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes titleFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title-anim {
+    animation: titleFadeIn 0.8s ease-out forwards;
+}
+
+/* CLOCK BIG — Premium TV Style */
+.clock-big {
+    font-size: 8vw;
+    /* lebih besar */
+    font-weight: 900;
+    letter-spacing: .08em;
+    color: #ffffff;
+    text-shadow:
+        0 0 12px rgba(255, 255, 255, 0.35),
+        0 0 24px rgba(0, 170, 255, 0.45),
+        0 0 42px rgba(0, 170, 255, 0.35),
+        2px 2px 12px rgba(0, 0, 0, 0.6);
+    /* shadow gelap membuat efek timbul */
+    transform: translateY(-10px);
+    /* sedikit naik supaya center tampak lebih proporsional */
+}
+
+body.friday .clock-big {
+    text-shadow:
+        0 0 12px rgba(255, 215, 0, 0.4),
+        0 0 26px rgba(255, 185, 0, 0.55),
+        0 0 38px rgba(255, 185, 0, 0.4);
+    color: #fff9d7;
+}
+
+
+.date-card {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 26px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: inline-block;
+    margin-top: 24px;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.date-masehi {
+    font-size: 2.3vw;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow:
+        0 0 10px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+.date-hijri {
+    margin-top: 6px;
+    font-size: 1.7vw;
+    font-weight: 500;
+    color: #e8f7ff;
+    opacity: .92;
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+
+
+.running-bar {
+    background: rgba(0, 0, 0, 0.55);
+    /* Lebih gelap */
+    backdrop-filter: blur(6px);
+    /* Blur lembut */
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* PREMIUM PRAYER CARD */
+.prayer-premium {
+    padding: 16px 10px;
+    text-align: center;
+    border-radius: 14px;
+    background: #ffffffee;
+    border: 3px solid transparent;
+    transition: .35s ease;
+    color: #2c2c2c;
+}
+
+.prayer-premium .label {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.prayer-premium .time {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: .95;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 6px rgba(255, 255, 255, .35);
+    }
+
+    50% {
+        box-shadow: 0 0 24px rgba(255, 255, 255, .55);
+    }
+
+    100% {
+        box-shadow: 0 0 6px rgba(255, 255, 255, .35);
+    }
+}
+
+.prayer-premium.active-prayer {
+    animation: glowPulse 2.2s ease-in-out infinite;
+    color: #000;
+    transform: translateY(-3px);
+}
+
+/* Colors */
+.p-imsak {
+    border-color: #38e6ff;
+}
+
+.p-subuh {
+    border-color: #6d78ff;
+}
+
+.p-syuruq {
+    border-color: #ffe48f;
+}
+
+.p-dhuha {
+    border-color: #ffd54f;
+}
+
+.p-dzuhur {
+    border-color: #4fffac;
+}
+
+.p-ashar {
+    border-color: #ffb444;
+}
+
+.p-maghrib {
+    border-color: #ff784e;
+}
+
+.p-isya {
+    border-color: #b38bff;
+}
+
+.active-prayer.p-imsak {
+    background: #38e6ff;
+}
+
+.active-prayer.p-subuh {
+    background: #6d78ff;
+}
+
+.active-prayer.p-syuruq {
+    background: #ffe48f;
+}
+
+.active-prayer.p-dhuha {
+    background: #ffd54f;
+}
+
+.active-prayer.p-dzuhur {
+    background: #4fffac;
+}
+
+.active-prayer.p-ashar {
+    background: #ffb444;
+}
+
+.active-prayer.p-maghrib {
+    background: #ff784e;
+}
+
+.active-prayer.p-isya {
+    background: #b38bff;
+}
+
+/** Mode 2 */
+.mode2-card {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+/* ANIMASI CARD MODE 2 */
+@keyframes cardFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardFadeDown {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+}
+
+.mode2-card-anim {
+    animation: cardFadeUp 0.7s ease-out forwards;
+}
+
+.mode2-card-hide {
+    animation: cardFadeDown 0.4s ease-in forwards;
+}
+
+.mode2-day {
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.5),
+        0 0 16px rgba(0, 0, 0, 0.35);
+}
+
+.mode2-hijri {
+    text-shadow:
+        0 0 6px rgba(0, 0, 0, 0.35);
+}
+
+.mode2-date {
+    text-shadow:
+        0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Special tightening for clock card */
+.mode2-clock-card {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+/* Clock text adjustment */
+.mode2-clock-text {
+    font-size: 4.2rem;
+    /* sebelumnya 5xl (≈4.5rem) */
+    line-height: 1;
+    /* lebih rapat */
+    margin: 0;
+    padding: 0;
+    text-shadow:
+        0 0 10px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+/* Mode 3 Table Styling */
+.ann-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ann-table th,
+.ann-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ann-table th {
+    text-align: left;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.ann-table td {
+    color: #e8f8ff;
+    font-size: 1.15rem;
+}
+
+/* ============================
+   Persistent Prayer Footer
+   tampil di semua mode
+   ============================ */
+#persistentPrayer {
+    position: fixed;
+    left: 50%;
+    bottom: 60px;
+    /* NAIKKAN dari bawah (default 12px) */
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 1400px;
+    z-index: 60;
+    pointer-events: none;
+}
+
+/* grid container untuk card */
+#persistentPrayer .prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 12px;
+    padding: 8px;
+}
+
+/* setiap card boleh menerima visual, tapi non-interactive */
+#persistentPrayer .prayer-box {
+    pointer-events: none;
+    /* agar tidak tangkap event */
+    min-width: 0;
+}
+
+/* ukuran label dan waktu agar jelas */
+#persistentPrayer .prayer-premium .label {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+#persistentPrayer .prayer-premium .time {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* active state */
+#persistentPrayer .prayer-premium.active-prayer {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+    color: #000;
+    /* kontras */
+}
+
+/* responsive: layar kecil → tampil 4 kolom scrolldable horizontal */
+@media (max-width: 900px) {
+    #persistentPrayer .prayer-grid {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(140px, 1fr);
+        overflow-x: auto;
+        padding-bottom: 6px;
+    }
+
+    #persistentPrayer {
+        bottom: 8px;
+        width: calc(100% - 12px);
+    }
+
+    #persistentPrayer .prayer-premium .time {
+        font-size: 1.2rem;
+    }
+
+    #persistentPrayer .prayer-premium .label {
+        font-size: 0.85rem;
+    }
+}
+
+/* ======================================================
+   RUNNING TEXT — ALWAYS FIXED AT BOTTOM
+   ====================================================== */
+/* Running Text BAR */
+#runningBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    z-index: 9999;
+}
+
+/* Wrapper harus relative agar span absolute bisa bergerak */
+#runningWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* TEXT */
+#runningText {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 2rem;
+    color: #fff;
+    transform: translateX(100%);
+    animation: marquee 30s linear infinite;
+}
+
+/* ANIMATION */
+@keyframes marquee {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+
+.mode3-card-anim {
+    animation: cardFadeUp 0.7s ease-out forwards;
+}
+
+/* OVERLAY */
+.bg-radial-gradient {
+  background: radial-gradient(
+    circle at center,
+    rgba(255,255,255,0.06) 0%,
+    rgba(0,0,0,0.35) 60%,
+    rgba(0,0,0,0.7) 100%
+  );
+}
