@@ -241,7 +241,9 @@
                 ========================== */
                 showMain: true,
                 showAnnouncement: false,
-                
+                mode: 1, // 1=Main, 2=Media, 3=Announcement
+                modeTimer: null,
+
                 // slides
                 currentSlide: 0,
                 slideTimer: null,
@@ -306,6 +308,63 @@
                     alarm.currentTime = 0;
                 },
 
+                runMode() {
+                    clearTimeout(this.modeTimer);
+
+                    console.log('MODE:', this.mode);
+
+                    // MODE 1 — MAIN (FIX 30s)
+                    if (this.mode === 1) {
+                        this.showMain = true;
+                        this.showAnnouncement = false;
+                        this.stopSlides();
+                        this.stopAnnouncements();
+
+                        this.modeTimer = setTimeout(() => {
+                            if (this.medias.length > 0) {
+                                this.mode = 2;
+                            } else if (this.announcements.length > 0) {
+                                this.mode = 3;
+                            }
+                            this.runMode();
+                        }, 30000);
+                    }
+
+                    // MODE 2 — MEDIA (DINAMIS)
+                    else if (this.mode === 2) {
+                        this.showMain = false;
+                        this.showAnnouncement = false;
+                        this.startSlides();
+
+                        const dur = this.totalSlideDuration();
+                        this.modeTimer = setTimeout(() => {
+                            this.stopSlides();
+                            this.mode = (this.announcements.length > 0) ? 3 : 1;
+                            this.runMode();
+                        }, dur);
+                    }
+
+                    // MODE 3 — ANNOUNCEMENT (DINAMIS)
+                    else if (this.mode === 3) {
+                        this.showMain = false;
+                        this.showAnnouncement = true;
+                        this.playAnnouncements();
+
+                        const dur = this.totalAnnouncementDuration();
+                        this.modeTimer = setTimeout(() => {
+                            this.stopAnnouncements();
+                            this.mode = 1;
+                            this.runMode();
+                        }, dur);
+                    }
+                },
+
+                totalSlideDuration() {
+                    return this.medias.reduce((s, m) => s + (parseInt(m.duration) || 5000), 0);
+                },
+
+
+
                 /* =========================
                    Init
                 ========================== */
@@ -313,12 +372,10 @@
                     window.smartTv = this;
                     this.startPrayerWatcher();
 
-                    // start slide after initial Mode1 duration (30s)
-                    if (this.medias.length > 0) {
-                        setTimeout(() => this.startSlides(), 30000);
-                    }
+                    // mulai dari MODE 1
+                    this.mode = 1;
+                    this.runMode();
 
-                    // ensure highlight runs for persistent footer
                     highlightActive();
                     setInterval(highlightActive, 1000);
                 },
@@ -338,82 +395,32 @@
 
                 playSlide(i) {
                     this.currentSlide = i;
-                    const dur = (this.medias[i] && this.medias[i].duration) ? this.medias[i].duration : 5000;
+                    const dur = this.medias[i]?.duration || 5000;
 
                     clearTimeout(this.slideTimer);
                     this.slideTimer = setTimeout(() => {
                         let next = (i + 1) % this.medias.length;
-
-                        // when cycle completes -> show Mode1 (30s) then Mode3 if exists
-                        if (next === 0) {
-                            // if announcements available -> show them
-                            if (this.announcements.length > 0) {
-                                this.stopSlides();
-                                // open Mode3 sequence
-                                this.playAnnouncements();
-                            } else {
-                                // show main then resume slides
-                                this.showMain = true;
-                                setTimeout(() => {
-                                    this.showMain = false;
-                                    this.playSlide(next);
-                                }, 30000);
-                            }
-                        } else {
-                            this.playSlide(next);
-                        }
+                        this.playSlide(next);
                     }, dur);
                 },
+
 
                 /* =========================
                    Announcements (Mode 3)
                 ========================== */
                 playAnnouncements() {
-                    // If overlay is active now, do not start announcements; return to Mode1
-                    if (this.overlay.active) {
-                        this.showAnnouncement = false;
-                        this.showMain = true;
-                        // resume slides after short pause
-                        setTimeout(() => {
-                            if (this.medias.length > 0) this.startSlides();
-                        }, 3000);
-                        return;
-                    }
-
-                    if (!this.announcements || this.announcements.length === 0) {
-                        this.showAnnouncement = false;
-                        this.showMain = true;
-                        if (this.medias.length > 0) this.startSlides();
-                        return;
-                    }
-
                     this.showAnnouncement = true;
                     this.showMain = false;
 
-                    // render current announcement
                     this.renderCurrentAnnouncement();
 
-                    // set timer
                     clearTimeout(this.announcementTimer);
-                    const dur = parseInt(this.announcements[this.currentAnnouncement].duration) || 8000;
+                    const dur = parseInt(this.announcements[this.currentAnnouncement]?.duration) || 8000;
+
                     this.announcementTimer = setTimeout(() => {
-                        this.currentAnnouncement = (this.currentAnnouncement + 1) % this.announcements.length;
-
-                        // if back to first item -> we've completed the set once; finish sequence and return to Mode1 then slides
-                        if (this.currentAnnouncement === 0) {
-                            // After finishing cycle -> return to Mode1 for 3s then resume slides (Mode1 duration 30s will be applied by slide logic)
-                            // But to respect chosen flow, we'll show Mode1 briefly then resume slides
-                            this.showAnnouncement = false;
-                            this.showMain = true;
-
-                            // resume slides after 3s
-                            setTimeout(() => {
-                                if (this.medias.length > 0) this.startSlides();
-                            }, 3000);
-                        } else {
-                            // play next announcement
-                            this.playAnnouncements();
-                        }
+                        this.currentAnnouncement =
+                            (this.currentAnnouncement + 1) % this.announcements.length;
+                        this.playAnnouncements();
                     }, dur);
                 },
 
