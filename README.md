@@ -81,7 +81,6 @@ public/
 ## ⚙️ Instalasi
 
 ### 1️⃣ Clone Repository
-```bash
 git clone https://github.com/username/smartmuadzzin.git
 cd smartmuadzzin
 
@@ -100,7 +99,6 @@ database.default.database = smartmuadzzin
 ### 4️⃣ Jalankan Aplikasi
 php spark serve
 
-
 Akses:
 
 Admin: http://localhost:8080/admin
@@ -108,11 +106,11 @@ Admin: http://localhost:8080/admin
 TV Display: http://localhost:8080
 
 ### 📡 Mode Online vs Offline
-Kondisi	Perilaku
-Online	Sinkronisasi jadwal sholat via API
-Offline	Gunakan data lokal
-Internet mati	Sistem tetap berjalan normal
-Restart listrik	Aman, data tidak hilang
+- Kondisi	Perilaku
+- Online	Sinkronisasi jadwal sholat via API
+- Offline	Gunakan data lokal
+- Internet mati	Sistem tetap berjalan normal
+- Restart listrik	Aman, data tidak hilang
 
 ### 🧪 Rekomendasi Testing
 
