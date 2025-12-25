@@ -97,9 +97,10 @@
                     <div class="text-white text-5xl font-extrabold drop-shadow-lg leading-tight">
                         <?= esc($data['nama_masjid']) ?>
                     </div>
-                    <div class="text-white text-xl mt-1 opacity-80 drop-shadow">
+                    <div class="masjid-alamat">
                         <?= esc($data['alamat_masjid']) ?>
                     </div>
+
                 </div>
             </div>
 
