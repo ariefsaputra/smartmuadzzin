@@ -485,36 +485,31 @@
                     const now = new Date();
                     const day = now.getDay(); // 5 = Jumat
 
-                    // durations (seconds)
                     const DUR = {
-                        menjelangAdzan: parseInt(<?= $pengaturan['menjelang_adzan'] ?? 600 ?>) || (10 * 60),
+                        menjelangAdzan: parseInt(<?= $pengaturan['menjelang_adzan'] ?? 600 ?>) || 600,
                         adzan: 4.5 * 60,
-                        menjelangIqamah: parseInt(<?= $pengaturan['menjelang_iqamah'] ?? 300 ?>) || (5 * 60),
-                        waktuSholat: parseInt(<?= $pengaturan['waktu_sholat'] ?? 600 ?>) || (10 * 60),
-                        khutbahJumat: parseInt(<?= $pengaturan['khutbah_jumat'] ?? 30 * 60 ?>) || (30 * 60)
+                        menjelangIqamah: parseInt(<?= $pengaturan['menjelang_iqamah'] ?? 300 ?>) || 300,
+                        waktuSholat: parseInt(<?= $pengaturan['waktu_sholat'] ?? 600 ?>) || 600,
+                        khutbahJumat: parseInt(<?= $pengaturan['khutbah_jumat'] ?? 1800 ?>) || 1800
                     };
 
                     const setOverlay = (active, state = null, nama = '', countdown = '') => {
 
-                        // stop announcements if overlay becomes active
                         if (active && this.showAnnouncement) {
                             this.stopAnnouncements();
                             this.showMain = true;
                         }
 
-                        // clear previous timer
                         if (this.overlayTimer) {
                             clearTimeout(this.overlayTimer);
                             this.overlayTimer = null;
                         }
 
-                        // apply overlay states
                         this.overlay.active = active;
                         this.overlay.state = state;
                         this.overlay.namaSholat = nama;
                         this.overlay.countdown = countdown;
 
-                        // auto-close for waktu sholat (normal or jumat)
                         if (state === 'waktu_sholat' || state === 'jumat_sholat') {
                             this.overlayTimer = setTimeout(() => {
                                 this.overlay.active = false;
@@ -525,66 +520,76 @@
                         }
                     };
 
-                    // ======================================
-                    // LOOPING SEMUA WAKTU SHOLAT
-                    // ======================================
+                    // ================================
+                    // KHUSUS JUMAT (DZUHUR SAJA)
+                    // ================================
+                    if (day === 5) {
+                        const waktuDzuhur = this.prayerTimes.dzuhur;
+                        if (waktuDzuhur && waktuDzuhur !== '--:--') {
+
+                            const target = new Date(now.toDateString() + " " + waktuDzuhur);
+                            const diff = (target - now) / 1000;
+
+                            // Menjelang Adzan Jumat
+                            if (diff > 0 && diff <= DUR.menjelangAdzan) {
+                                if (this.overlay.state !== 'jumat_pre') {
+                                    this.playAlarm();
+                                    setTimeout(() => this.stopAlarm(), 6000);
+                                }
+                                setOverlay(true, 'jumat_pre', 'JUMAT', this.formatCountdown(diff));
+                                return;
+                            }
+
+                            // Adzan Jumat
+                            if (diff <= 0 && diff > -DUR.adzan) {
+                                if (this.overlay.state !== 'jumat_adzan') {
+                                    this.playAlarm();
+                                    setTimeout(() => this.stopAlarm(), 6000);
+                                }
+                                setOverlay(true, 'jumat_adzan', 'JUMAT', '');
+                                return;
+                            }
+
+                            // Khutbah Jumat
+                            if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.khutbahJumat)) {
+                                setOverlay(true, 'jumat_khutbah', 'JUMAT', '');
+                                return;
+                            }
+
+                            // Sholat Jumat
+                            if (
+                                diff <= -(DUR.adzan + DUR.khutbahJumat) &&
+                                diff > -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)
+                            ) {
+                                setOverlay(true, 'jumat_sholat', 'JUMAT', '');
+                                return;
+                            }
+
+                            // Setelah Jumat selesai
+                            if (diff <= -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)) {
+                                setOverlay(false);
+                                return;
+                            }
+                        }
+                    }
+
+                    // ================================
+                    // NORMAL (SUBUH, DZUHUR*, ASHAR, MAGHRIB, ISYA)
+                    // * Dzuhur hanya non-Jumat
+                    // ================================
                     const wajib = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
 
-                    for (let [nama, waktu] of Object.entries(this.prayerTimes)) {
-                        if (!wajib.includes(nama)) continue;
+                    for (let nama of wajib) {
 
-                        let target = new Date(now.toDateString() + " " + waktu);
-                        let diff = (target - now) / 1000; // seconds
+                        if (day === 5 && nama === 'dzuhur') continue;
 
-                        // // --------------------------------------------------
-                        // // KHUSUS DZUHUR DI HARI JUMAT
-                        // // --------------------------------------------------
-                        // if (day === 5 && nama === 'dzuhur') {
+                        const waktu = this.prayerTimes[nama];
+                        if (!waktu || waktu === '--:--') continue;
 
-                        //     // menjelang adzan jumat
-                        //     if (diff > 0 && diff <= DUR.menjelangAdzan) {
-                        //         setOverlay(true, 'jumat_pre', 'DZUHUR', this.formatCountdown(diff));
-                        //         return;
-                        //     }
+                        const target = new Date(now.toDateString() + " " + waktu);
+                        const diff = (target - now) / 1000;
 
-                        //     // adzan jumat
-                        //     if (diff <= 0 && diff > -DUR.adzan) {
-                        //         if (this.overlay.state !== 'jumat_adzan') {
-                        //             this.playAlarm();
-                        //             setTimeout(() => this.stopAlarm(), 6000);
-                        //         }
-                        //         setOverlay(true, 'jumat_adzan', 'DZUHUR', '');
-                        //         return;
-                        //     }
-
-                        //     // khutbah jumat
-                        //     if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.khutbahJumat)) {
-                        //         setOverlay(true, 'jumat_khutbah', 'DZUHUR', '');
-                        //         return;
-                        //     }
-
-                        //     // sholat jumat
-                        //     if (diff <= -(DUR.adzan + DUR.khutbahJumat) &&
-                        //         diff > -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)) {
-
-                        //         setOverlay(true, 'jumat_sholat', 'DZUHUR', '');
-                        //         return;
-                        //     }
-
-                        //     // selesai semuanya
-                        //     if (diff <= -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)) {
-                        //         setOverlay(false, null, '', '');
-                        //         return;
-                        //     }
-
-                        //     continue;
-                        // }
-
-                        // --------------------------------------------------
-                        // NORMAL 5 WAKTU
-                        // --------------------------------------------------
-
-                        // menjelang adzan
+                        // Menjelang adzan
                         if (diff > 0 && diff <= DUR.menjelangAdzan) {
                             if (this.overlay.state !== 'menjelang_adzan') {
                                 this.playAlarm();
@@ -594,51 +599,48 @@
                             return;
                         }
 
-                        // adzan
+                        // Adzan
                         if (diff <= 0 && diff > -DUR.adzan) {
                             if (this.overlay.state !== 'adzan') {
                                 this.playAlarm();
                                 setTimeout(() => this.stopAlarm(), 6000);
-
-                                // STATE KHOTBAH JUMAT
-                                if (day === 5 && nama === 'dzuhur') {
-                                    if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.khutbahJumat)) {
-                                        setOverlay(true, 'jumat_khutbah', 'DZUHUR', '');
-                                        return;
-                                    }
-                                }
                             }
                             setOverlay(true, 'adzan', nama.toUpperCase(), '');
                             return;
                         }
 
-                        // menjelang iqamah
+                        // Menjelang iqamah
                         if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.menjelangIqamah)) {
                             if (this.overlay.state !== 'menjelang_iqamah') {
                                 this.playAlarm();
                                 setTimeout(() => this.stopAlarm(), 6000);
                             }
-                            const sisaIqamah = (DUR.adzan + DUR.menjelangIqamah) + diff;
-                            setOverlay(true, 'menjelang_iqamah', nama.toUpperCase(), this.formatCountdown(sisaIqamah));
+                            const sisa = (DUR.adzan + DUR.menjelangIqamah) + diff;
+                            setOverlay(true, 'menjelang_iqamah', nama.toUpperCase(), this.formatCountdown(sisa));
                             return;
                         }
 
-                        // waktu sholat (normal)
-                        if (diff <= -(DUR.adzan + DUR.menjelangIqamah) &&
-                            diff > -(DUR.adzan + DUR.menjelangIqamah + DUR.waktuSholat)) {
+                        // Waktu sholat
+                        if (
+                            diff <= -(DUR.adzan + DUR.menjelangIqamah) &&
+                            diff > -(DUR.adzan + DUR.menjelangIqamah + DUR.waktuSholat)
+                        ) {
+
+                            if (this.overlay.state !== 'waktu_sholat') {
+                                this.playAlarm();
+                                setTimeout(() => this.stopAlarm(), 6000);
+                            }
+
                             setOverlay(true, 'waktu_sholat', nama.toUpperCase(), '');
                             return;
                         }
                     }
 
-                    // ======================================
-                    // Jika tidak ada overlay active → reset
-                    // ======================================
-                    if (!this.overlay.active) {
-                        this.overlay.active = false;
-                        this.overlay.state = null;
-                        this.overlay.namaSholat = '';
-                        this.overlay.countdown = '';
+                    // ================================
+                    // RESET JIKA TIDAK ADA STATE
+                    // ================================
+                    if (this.overlay.active) {
+                        setOverlay(false);
                     }
                 },
 
