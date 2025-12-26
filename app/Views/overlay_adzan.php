@@ -80,31 +80,36 @@
       <div class="text-center mt-28 select-none">
 
         <!-- LABEL -->
-        <div class="text-xl md:text-2xl uppercase tracking-[0.4em] text-white/75 mb-5">
+        <div class="text-[3rem] uppercase tracking-[0.5em] text-amber-300/90 mb-8">
           Menjelang Adzan
         </div>
 
         <!-- NAMA SHOLAT -->
         <div
-          class="text-5xl md:text-6xl font-semibold tracking-wide text-white mb-12 drop-shadow-[0_8px_26px_rgba(0,0,0,0.5)] ">
+          class="text-[9.5rem]
+                font-extrabold
+                tracking-wide
+                mb-16
+                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
+                bg-clip-text text-transparent
+                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
           <span x-text="overlay.namaSholat"></span>
         </div>
 
-        <!-- COUNTDOWN (HERO) -->
+        <!-- COUNTDOWN -->
         <div
-          class=" text-[8.5rem] md:text-[10rem] font-semibold tracking-widest leading-none text-white drop-shadow-[0_18px_48px_rgba(0,0,0,0.7)] mb-10 "
-          x-text="overlay.countdown"></div>
-
-        <!-- GARIS HALUS -->
-        <div class="w-28 h-px mx-auto bg-white/35 mb-8"></div>
+          class="text-[14rem] font-extrabold tracking-[0.18em] leading-none
+            text-emerald-300
+            drop-shadow-[0_20px_60px_rgba(16,185,129,0.45)] mb-14"
+          x-text="overlay.countdown">
+        </div>
 
         <!-- PESAN -->
-        <div class=" text-xl md:text-2xl font-medium tracking-wide text-white/80 ">
+        <div class="text-[4rem] font-medium text-white/90">
           Bersiaplah untuk melaksanakan sholat
         </div>
 
       </div>
-
 
     </template>
 
@@ -113,36 +118,24 @@
       <div class="text-center mt-28 select-none">
 
         <!-- LABEL -->
-        <div
-          class="
-      text-xl md:text-2xl
-      uppercase tracking-[0.4em]
-      text-white/70
-      mb-6
-    ">
+        <div class="text-[3rem] uppercase tracking-[0.5em] text-emerald-300/80 mb-8">
           Adzan
         </div>
 
         <!-- NAMA SHOLAT -->
         <div
-          class="
-      text-6xl md:text-7xl
-      font-semibold tracking-wide
-      text-white
-      mb-10
-      drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]
-    ">
+          class="text-[9.5rem]
+                font-extrabold
+                tracking-wide
+                mb-16
+                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
+                bg-clip-text text-transparent
+                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
           <span x-text="overlay.namaSholat"></span>
         </div>
 
         <!-- PESAN -->
-        <div
-          class="
-      text-2xl md:text-3xl
-      font-medium
-      tracking-wide
-      text-white/80
-    ">
+        <div class="text-[4.2rem] font-medium text-white/85">
           Mohon tetap khusyuk mendengarkan adzan
         </div>
 
@@ -156,40 +149,20 @@
       <div class="text-center mt-28 select-none">
 
         <!-- LABEL -->
-        <div
-          class="
-      text-xl md:text-2xl
-      uppercase tracking-[0.4em]
-      text-white/70
-      mb-6
-    ">
+        <div class="text-[3rem] uppercase tracking-[0.5em] text-amber-300/90 mb-8">
           Menuju Iqamah
         </div>
 
         <!-- COUNTDOWN -->
         <div
-          class="
-            text-[8rem] md:text-[9.5rem]
-            font-semibold
-            tracking-widest
-            leading-none
-            text-white
-            drop-shadow-[0_18px_48px_rgba(0,0,0,0.7)]
-            mb-10
-          "
-          x-text="overlay.countdown"></div>
-
-        <!-- GARIS -->
-        <div class="w-28 h-px mx-auto bg-white/35 mb-8"></div>
+          class="text-[14.5rem] font-extrabold tracking-[0.2em] leading-none
+                  text-white
+                  drop-shadow-[0_24px_70px_rgba(255,255,255,0.25)] mb-16"
+          x-text="overlay.countdown">
+        </div>
 
         <!-- PESAN -->
-        <div
-          class="
-          text-2xl md:text-3xl
-          font-medium
-          tracking-wide
-          text-white/80
-        ">
+        <div class="text-[4.2rem] font-semibold text-emerald-200">
           Segera rapatkan dan luruskan shaf
         </div>
 
@@ -203,50 +176,49 @@
       <div class="text-center mt-28 select-none">
 
         <!-- LABEL -->
-        <div
-          class="
-      text-xl md:text-2xl
-      uppercase tracking-[0.4em]
-      text-white/70
-      mb-6
-    ">
+        <div class="text-[3rem] uppercase tracking-[0.5em] text-slate-300 mb-8">
           Waktu Sholat
         </div>
 
         <!-- NAMA SHOLAT -->
         <div
-          class="
-      text-6xl md:text-7xl
-      font-semibold tracking-wide
-      text-white
-      mb-10
-      drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)]
-    ">
+          class="text-[9.5rem]
+                font-extrabold
+                tracking-wide
+                mb-16
+                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
+                bg-clip-text text-transparent
+                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
           <span x-text="overlay.namaSholat"></span>
         </div>
 
         <!-- PESAN -->
-        <div
-          class="
-      text-2xl md:text-3xl
-      font-medium
-      tracking-wide
-      text-white/75
-    ">
+        <div class="text-[4rem] font-medium text-white/80">
           Harap tenang dan khusyuk dalam sholat
         </div>
 
       </div>
-
 
     </template>
 
     <!-- JUMAT PRE -->
     <template x-if="overlay.state === 'jumat_pre'">
       <div class="text-center space-y-6">
-        <div class="text-5xl font-bold">Persiapan Sholat Jumat</div>
-        <div class="text-3xl opacity-80">Menuju Adzan Dzuhur</div>
-        <div class="text-7xl font-extrabold" x-text="overlay.countdown"></div>
+        <!-- PRE JUMAT -->
+        <div class="text-[8.5rem] font-extrabold text-white mb-10">
+          Persiapan Sholat Jumat
+        </div>
+
+        <div class="text-[4.5rem] text-amber-300 mb-12">
+          Menuju Adzan Dzuhur
+        </div>
+
+        <div
+          class="text-[15rem] font-extrabold tracking-[0.22em]
+              text-emerald-300
+              drop-shadow-[0_24px_70px_rgba(16,185,129,0.5)]"
+          x-text="overlay.countdown">
+        </div>
       </div>
     </template>
 
@@ -270,12 +242,28 @@
     <!-- STATE: WAKTU SHOLAT -->
     <template x-if="overlay.state === 'waktu_sholat'">
       <div class="text-center space-y-8">
-        <div class="text-6xl font-extrabold animate-pulse">
-          WAKTU SHOLAT <span x-text="overlay.namaSholat"></span>
+        <!-- LABEL -->
+        <div class="text-[3rem] uppercase tracking-[0.5em] text-slate-300 mb-8">
+          Waktu Sholat
         </div>
-        <div class="text-xl opacity-80">
-          Harap Tenang & Khusyuk Dalam Sholat
+
+        <!-- NAMA SHOLAT -->
+        <div
+          class="text-[9.5rem]
+                font-extrabold
+                tracking-wide
+                mb-16
+                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
+                bg-clip-text text-transparent
+                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
+          <span x-text="overlay.namaSholat"></span>
         </div>
+
+        <!-- PESAN -->
+        <div class="text-[4rem] font-medium text-white/80">
+          Harap tenang dan khusyuk dalam sholat
+        </div>
+
       </div>
     </template>
   </div>
