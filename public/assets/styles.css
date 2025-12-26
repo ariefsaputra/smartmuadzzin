@@ -253,21 +253,6 @@ body.friday .clock-big {
     background: #b38bff;
 }
 
-/** Mode 2 */
-.mode2-card {
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
-    background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.6),
-            rgba(0, 0, 0, 0.45));
-}
-
 /* ANIMASI CARD MODE 2 */
 @keyframes cardFadeUp {
     0% {
@@ -301,40 +286,12 @@ body.friday .clock-big {
     animation: cardFadeDown 0.4s ease-in forwards;
 }
 
-.mode2-day {
-    text-shadow:
-        0 0 8px rgba(0, 0, 0, 0.5),
-        0 0 16px rgba(0, 0, 0, 0.35);
-}
-
-.mode2-hijri {
-    text-shadow:
-        0 0 6px rgba(0, 0, 0, 0.35);
-}
-
-.mode2-date {
-    text-shadow:
-        0 0 6px rgba(0, 0, 0, 0.25);
-}
-
 /* Special tightening for clock card */
 .mode2-clock-card {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
 }
 
-/* Clock text adjustment */
-.mode2-clock-text {
-    font-size: 4.2rem;
-    /* sebelumnya 5xl (≈4.5rem) */
-    line-height: 1;
-    /* lebih rapat */
-    margin: 0;
-    padding: 0;
-    text-shadow:
-        0 0 10px rgba(0, 0, 0, 0.45),
-        0 0 18px rgba(0, 0, 0, 0.35);
-}
 
 /* Mode 3 Table Styling */
 .ann-table {
@@ -391,7 +348,7 @@ body {
 
 /* ============================
         MODE 1 BACKGROUND IMAGE
-        ============================ */
+============================ */
 .bg-mode1 {
     position: absolute;
     inset: 0;
@@ -615,18 +572,6 @@ body.friday .clock-big {
     background: #b38bff;
 }
 
-/** Mode 2 */
-.mode2-card {
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
-}
-
 /* ANIMASI CARD MODE 2 */
 @keyframes cardFadeUp {
     0% {
@@ -658,41 +603,6 @@ body.friday .clock-big {
 
 .mode2-card-hide {
     animation: cardFadeDown 0.4s ease-in forwards;
-}
-
-.mode2-day {
-    text-shadow:
-        0 0 8px rgba(0, 0, 0, 0.5),
-        0 0 16px rgba(0, 0, 0, 0.35);
-}
-
-.mode2-hijri {
-    text-shadow:
-        0 0 6px rgba(0, 0, 0, 0.35);
-}
-
-.mode2-date {
-    text-shadow:
-        0 0 6px rgba(0, 0, 0, 0.25);
-}
-
-/* Special tightening for clock card */
-.mode2-clock-card {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-}
-
-/* Clock text adjustment */
-.mode2-clock-text {
-    font-size: 4.2rem;
-    /* sebelumnya 5xl (≈4.5rem) */
-    line-height: 1;
-    /* lebih rapat */
-    margin: 0;
-    padding: 0;
-    text-shadow:
-        0 0 10px rgba(0, 0, 0, 0.45),
-        0 0 18px rgba(0, 0, 0, 0.35);
 }
 
 /* Mode 3 Table Styling */
@@ -927,20 +837,6 @@ body.friday .clock-big {
     }
 }
 
-@media (min-width: 1280px) {
-    .mode2-clock-text {
-        font-size: 5rem;
-    }
-
-    .mode2-day {
-        font-size: 2.2rem;
-    }
-
-    .mode2-date {
-        font-size: 1.4rem;
-    }
-}
-
 /* ======================================================
    MODE 3 — MAXIMUM READABILITY (MASJID TV)
    Target: 43–65 inch, jarak jauh
@@ -1033,16 +929,14 @@ body.friday .clock-big {
    ========================================= */
 
 .masjid-alamat {
-    margin-top: 12px;
-    font-size: clamp(28px, 2.2vw, 36px);
-    /* BESAR & adaptif */
+    margin-top: 14px;
+    font-size: clamp(28px, 2.2vw, 38px);
     font-weight: 600;
-    letter-spacing: 1.2px;
-    color: #ffffff;
-    opacity: 0.95;
+    letter-spacing: 1.4px;
+    opacity: .95;
     text-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.75),
-        0 0 18px rgba(0, 0, 0, 0.55);
+        0 2px 6px rgba(0, 0, 0, .75),
+        0 0 18px rgba(0, 0, 0, .55);
 }
 
 /* Extra clarity untuk layar besar */
@@ -1056,63 +950,78 @@ body.friday .clock-big {
 }
 
 /* ======================================================
-   MODE 2 & 3 — DATE CARD
-   Optimized for TV 43 inch (Always Visible)
+   MODE 2 & MODE 3 — DATE CARD (FINAL, NO OVERRIDE)
+   TV 43–65 INCH
    ====================================================== */
 
-@media (min-width: 1280px) {
-
-    /* CARD DATE WRAPPER */
-    .mode2-card {
-        padding: 22px 26px;
-        border-radius: 20px;
-    }
-
-    /* HARI (SENIN, SELASA, dst) */
-    .mode2-day {
-        font-size: 3rem;
-        /* ⬆ DOMINAN */
-        font-weight: 900;
-        letter-spacing: 1.2px;
-        margin-bottom: 6px;
-        text-shadow:
-            0 0 14px rgba(0, 0, 0, 0.6),
-            0 0 28px rgba(0, 0, 0, 0.45);
-    }
-
-    /* TANGGAL MASEHI */
-    .mode2-date {
-        font-size: 1.9rem;
-        /* ⬆ jelas terbaca */
-        font-weight: 600;
-        opacity: 0.95;
-        letter-spacing: 0.6px;
-        margin-top: 6px;
-        text-shadow:
-            0 0 10px rgba(0, 0, 0, 0.45);
-    }
-
-    /* TANGGAL HIJRIYAH */
-    .mode2-hijri {
-        font-size: 1.8rem;
-        /* ⬆ setara masehi */
-        font-weight: 600;
-        opacity: 0.95;
-        margin-top: 2px;
-        letter-spacing: 0.5px;
-        text-shadow:
-            0 0 10px rgba(0, 0, 0, 0.45);
-    }
+.mode2-card {
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, .6),
+            rgba(0, 0, 0, .45));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 18px 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .15);
+    box-shadow: 0 0 16px rgba(0, 0, 0, .45);
 }
 
+/* Default (mobile / small) */
+.mode2-day {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.mode2-hijri,
+.mode2-date {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Clock kecil */
+.mode2-clock-text {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* =========================
+   TV 43 INCH KE ATAS
+   ========================= */
 @media (min-width: 1280px) {
 
-    .mode3-card-anim .mode2-day {
-        font-size: 3.2rem;
+    .mode2-card {
+        padding: 26px 30px;
+        border-radius: 22px;
     }
 
-    .mode3-card-anim .mode2-date,
+    .mode2-day {
+        font-size: 3.2rem !important;
+        font-weight: 900;
+        letter-spacing: 1.4px;
+
+        margin-bottom: 14px !important;
+    }
+
+    .mode2-hijri {
+        font-size: 2.1rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    .mode2-date {
+        font-size: 2rem !important;
+        margin-bottom: 2px !important;
+    }
+
+    .mode3-card-anim .mode2-day {
+        font-size: 3.2rem !important;
+    }
+
     .mode3-card-anim .mode2-hijri {
-        font-size: 2rem;
+        font-size: 2.1rem !important;
+    }
+
+    .mode3-card-anim .mode2-date {
+        font-size: 2rem !important;
     }
 }
