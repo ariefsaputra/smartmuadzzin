@@ -40,7 +40,7 @@ class Pengumuman extends BaseController
     public function edit($id)
     {
         $model = new PengumumanModel();
-        $data['row'] = $model->find($id);
+        $data['pengumuman'] = $model->find($id);
         return view('admin/pengumuman/edit', $data);
     }
 
