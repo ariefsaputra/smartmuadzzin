@@ -611,10 +611,10 @@
 
                         // Menjelang iqamah
                         if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.menjelangIqamah)) {
-                            if (this.overlay.state !== 'menjelang_iqamah') {
-                                this.playAlarm();
-                                setTimeout(() => this.stopAlarm(), 6000);
-                            }
+                            // if (this.overlay.state !== 'menjelang_iqamah') {
+                            //     this.playAlarm();
+                            //     setTimeout(() => this.stopAlarm(), 6000);
+                            // }
                             const sisa = (DUR.adzan + DUR.menjelangIqamah) + diff;
                             setOverlay(true, 'menjelang_iqamah', nama.toUpperCase(), this.formatCountdown(sisa));
                             return;
@@ -800,6 +800,24 @@
             }
         });
     </script>
+
+    <script>
+        (function() {
+            // Simpan tanggal saat halaman pertama kali dimuat
+            let lastDate = new Date().toDateString();
+
+            setInterval(() => {
+                const now = new Date().toDateString();
+
+                // Jika hari sudah berganti → reload agar jadwal sholat diambil ulang dari server
+                if (now !== lastDate) {
+                    console.log('[SMARTMUADZZIN] Hari berganti, reload jadwal...');
+                    location.reload();
+                }
+            }, 60000); // cek tiap 1 menit (aman & ringan)
+        })();
+    </script>
+
 
 </body>
 
