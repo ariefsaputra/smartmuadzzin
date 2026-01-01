@@ -493,6 +493,14 @@
                         khutbahJumat: parseInt(<?= $pengaturan['khutbah_jumat'] ?? 1800 ?>) || 1800
                     };
 
+                    const IQAMAH = {
+                        subuh: 12 * 60, // 12 menit
+                        dzuhur: 5 * 60, // 5 menit (non Jumat)
+                        ashar: 5 * 60,
+                        maghrib: 5 * 60,
+                        isya: 7 * 60 // 7 menit
+                    };
+
                     const setOverlay = (active, state = null, nama = '', countdown = '') => {
 
                         if (active && this.showAnnouncement) {
@@ -588,6 +596,7 @@
 
                         const target = new Date(now.toDateString() + " " + waktu);
                         const diff = (target - now) / 1000;
+                        const durIqamah = IQAMAH[nama] || DUR.menjelangIqamah;
 
                         // Menjelang adzan
                         if (diff > 0 && diff <= DUR.menjelangAdzan) {
@@ -610,12 +619,8 @@
                         }
 
                         // Menjelang iqamah
-                        if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.menjelangIqamah)) {
-                            // if (this.overlay.state !== 'menjelang_iqamah') {
-                            //     this.playAlarm();
-                            //     setTimeout(() => this.stopAlarm(), 6000);
-                            // }
-                            const sisa = (DUR.adzan + DUR.menjelangIqamah) + diff;
+                        if (diff <= -DUR.adzan && diff > -(DUR.adzan + durIqamah)) {
+                            const sisa = (DUR.adzan + durIqamah) + diff;
                             setOverlay(true, 'menjelang_iqamah', nama.toUpperCase(), this.formatCountdown(sisa));
                             return;
                         }
