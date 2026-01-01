@@ -32,7 +32,6 @@ class Tv extends BaseController
         $tanggalHariIni = date('Y-m-d');
         $jadwalModel = new JadwalModel();
         $jadwal = $jadwalModel->where('tanggal', $tanggalHariIni)->first();
-
         // fallback jika tidak ada jadwal
         if (!$jadwal) {
             $jadwal = [
