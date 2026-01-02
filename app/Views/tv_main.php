@@ -485,32 +485,58 @@
                     const now = new Date();
                     const day = now.getDay(); // 5 = Jumat
 
+                    // ================================
+                    // KONFIGURASI DURASI (DETIK)
+                    // ================================
                     const DUR = {
                         menjelangAdzan: parseInt(<?= $pengaturan['menjelang_adzan'] ?? 600 ?>) || 600,
                         adzan: 4.5 * 60,
-                        menjelangIqamah: parseInt(<?= $pengaturan['menjelang_iqamah'] ?? 300 ?>) || 300,
                         waktuSholat: parseInt(<?= $pengaturan['waktu_sholat'] ?? 600 ?>) || 600,
                         khutbahJumat: parseInt(<?= $pengaturan['khutbah_jumat'] ?? 1800 ?>) || 1800
                     };
 
                     const IQAMAH = {
-                        subuh: 12 * 60, // 12 menit
-                        dzuhur: 5 * 60, // 5 menit (non Jumat)
+                        subuh: 12 * 60,
+                        dzuhur: 5 * 60,
                         ashar: 5 * 60,
                         maghrib: 5 * 60,
-                        isya: 7 * 60 // 7 menit
+                        isya: 7 * 60
                     };
 
+                    let stateMatched = false;
+
+                    // pastikan ada
+                    if (!this.lastPrayerState) {
+                        this.lastPrayerState = null;
+                    }
+
+                    // ================================
+                    // HELPER SET OVERLAY + ALARM
+                    // ================================
                     const setOverlay = (active, state = null, nama = '', countdown = '') => {
 
-                        if (active && this.showAnnouncement) {
-                            this.stopAnnouncements();
-                            this.showMain = true;
-                        }
+                        const stateChanged = this.lastPrayerState !== state;
 
-                        if (this.overlayTimer) {
-                            clearTimeout(this.overlayTimer);
-                            this.overlayTimer = null;
+                        // 🔔 ALARM SESUAI REKOMENDASI NO.6
+                        if (stateChanged) {
+                            if (
+                                [
+                                    'menjelang_adzan',
+                                    'adzan',
+                                    'waktu_sholat',
+                                    'jumat_adzan',
+                                    // 'jumat_sholat'
+                                ].includes(state)
+                            ) {
+                                this.playAlarm();
+                                setTimeout(() => this.stopAlarm(), 6000);
+                            }
+
+                            // reset timer jika pindah state
+                            if (this.overlayTimer) {
+                                clearTimeout(this.overlayTimer);
+                                this.overlayTimer = null;
+                            }
                         }
 
                         this.overlay.active = active;
@@ -518,72 +544,61 @@
                         this.overlay.namaSholat = nama;
                         this.overlay.countdown = countdown;
 
+                        this.lastPrayerState = state;
+
+                        // ⏱️ auto-hide hanya untuk sholat
                         if (state === 'waktu_sholat' || state === 'jumat_sholat') {
                             this.overlayTimer = setTimeout(() => {
                                 this.overlay.active = false;
                                 this.overlay.state = null;
                                 this.overlay.namaSholat = '';
                                 this.overlay.countdown = '';
+                                this.lastPrayerState = null;
                             }, DUR.waktuSholat * 1000);
                         }
                     };
 
                     // ================================
-                    // KHUSUS JUMAT (DZUHUR SAJA)
+                    // KHUSUS JUMAT (DZUHUR)
                     // ================================
                     if (day === 5) {
                         const waktuDzuhur = this.prayerTimes.dzuhur;
                         if (waktuDzuhur && waktuDzuhur !== '--:--') {
 
-                            const target = new Date(now.toDateString() + " " + waktuDzuhur);
+                            const target = new Date(`${now.toDateString()} ${waktuDzuhur}`);
                             const diff = (target - now) / 1000;
 
-                            // Menjelang Adzan Jumat
                             if (diff > 0 && diff <= DUR.menjelangAdzan) {
-                                if (this.overlay.state !== 'jumat_pre') {
-                                    this.playAlarm();
-                                    setTimeout(() => this.stopAlarm(), 6000);
-                                }
                                 setOverlay(true, 'jumat_pre', 'JUMAT', this.formatCountdown(diff));
+                                stateMatched = true;
                                 return;
                             }
 
-                            // Adzan Jumat
                             if (diff <= 0 && diff > -DUR.adzan) {
-                                if (this.overlay.state !== 'jumat_adzan') {
-                                    this.playAlarm();
-                                    setTimeout(() => this.stopAlarm(), 6000);
-                                }
                                 setOverlay(true, 'jumat_adzan', 'JUMAT', '');
+                                stateMatched = true;
                                 return;
                             }
 
-                            // Khutbah Jumat
                             if (diff <= -DUR.adzan && diff > -(DUR.adzan + DUR.khutbahJumat)) {
                                 setOverlay(true, 'jumat_khutbah', 'JUMAT', '');
+                                stateMatched = true;
                                 return;
                             }
 
-                            // Sholat Jumat
                             if (
                                 diff <= -(DUR.adzan + DUR.khutbahJumat) &&
                                 diff > -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)
                             ) {
                                 setOverlay(true, 'jumat_sholat', 'JUMAT', '');
-                                return;
-                            }
-
-                            // Setelah Jumat selesai
-                            if (diff <= -(DUR.adzan + DUR.khutbahJumat + DUR.waktuSholat)) {
-                                setOverlay(false);
+                                stateMatched = true;
                                 return;
                             }
                         }
                     }
 
                     // ================================
-                    // NORMAL (SUBUH, DZUHUR*, ASHAR, MAGHRIB, ISYA)
-                    // * Dzuhur hanya non-Jumat
+                    // SHOLAT WAJIB NORMAL
                     // ================================
                     const wajib = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
 
@@ -594,61 +609,50 @@
                         const waktu = this.prayerTimes[nama];
                         if (!waktu || waktu === '--:--') continue;
 
-                        const target = new Date(now.toDateString() + " " + waktu);
+                        const target = new Date(`${now.toDateString()} ${waktu}`);
                         const diff = (target - now) / 1000;
-                        const durIqamah = IQAMAH[nama] || DUR.menjelangIqamah;
+                        const durIqamah = IQAMAH[nama];
 
-                        // Menjelang adzan
                         if (diff > 0 && diff <= DUR.menjelangAdzan) {
-                            if (this.overlay.state !== 'menjelang_adzan') {
-                                this.playAlarm();
-                                setTimeout(() => this.stopAlarm(), 6000);
-                            }
                             setOverlay(true, 'menjelang_adzan', nama.toUpperCase(), this.formatCountdown(diff));
+                            stateMatched = true;
                             return;
                         }
 
-                        // Adzan
                         if (diff <= 0 && diff > -DUR.adzan) {
-                            if (this.overlay.state !== 'adzan') {
-                                this.playAlarm();
-                                setTimeout(() => this.stopAlarm(), 6000);
-                            }
                             setOverlay(true, 'adzan', nama.toUpperCase(), '');
+                            stateMatched = true;
                             return;
                         }
 
-                        // Menjelang iqamah
                         if (diff <= -DUR.adzan && diff > -(DUR.adzan + durIqamah)) {
                             const sisa = (DUR.adzan + durIqamah) + diff;
                             setOverlay(true, 'menjelang_iqamah', nama.toUpperCase(), this.formatCountdown(sisa));
+                            stateMatched = true;
                             return;
                         }
 
-                        // Waktu sholat
                         if (
-                            diff <= -(DUR.adzan + DUR.menjelangIqamah) &&
-                            diff > -(DUR.adzan + DUR.menjelangIqamah + DUR.waktuSholat)
+                            diff <= -(DUR.adzan + durIqamah) &&
+                            diff > -(DUR.adzan + durIqamah + DUR.waktuSholat)
                         ) {
-
-                            if (this.overlay.state !== 'waktu_sholat') {
-                                this.playAlarm();
-                                setTimeout(() => this.stopAlarm(), 6000);
-                            }
-
                             setOverlay(true, 'waktu_sholat', nama.toUpperCase(), '');
+                            stateMatched = true;
                             return;
                         }
                     }
 
                     // ================================
-                    // RESET JIKA TIDAK ADA STATE
+                    // RESET AMAN (NON-KRITIKAL)
                     // ================================
-                    if (this.overlay.active) {
+                    if (
+                        !stateMatched &&
+                        this.overlay.active &&
+                        !['waktu_sholat', 'jumat_sholat'].includes(this.overlay.state)
+                    ) {
                         setOverlay(false);
                     }
                 },
-
 
                 formatCountdown(sec) {
                     sec = Math.max(0, Math.floor(sec));
