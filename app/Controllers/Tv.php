@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\JadwalModel;
 use App\Models\MediaModel;
 use App\Models\PengumumanModel;
+use App\Services\JadwalSholatService;
 
 class Tv extends BaseController
 {
@@ -20,6 +21,12 @@ class Tv extends BaseController
         foreach ($q as $row) {
             $pengaturan[$row['keyname']] = $row['value'];
         }
+        
+        if($pengaturan['mode'] ?? 'online' == 'online') {
+            // jika mode online, pastikan jadwal hari ini sudah ada di database
+            $jadwalService = new JadwalSholatService();
+            $jadwalService->getTodayPrayer(); // ini akan otomatis update jadwal hari ini dari API
+        }
 
         $nama_masjid   = $pengaturan['nama_masjid']   ?? 'MASJID';
         $alamat_masjid = $pengaturan['alamat_masjid'] ?? '';
@@ -30,10 +37,11 @@ class Tv extends BaseController
          * 2. Ambil Jadwal Sholat Hari Ini
          * ========================== */
         $tanggalHariIni = date('Y-m-d');
-        $jadwalModel = new JadwalModel();
+            $jadwalModel = new JadwalModel();
         $jadwal = $jadwalModel->where('tanggal', $tanggalHariIni)->first();
         // fallback jika tidak ada jadwal
         if (!$jadwal) {
+
             $jadwal = [
                 'imsak' => '--:--',
                 'subuh' => '--:--',

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\JadwalModel;
 use App\Models\MediaModel;
 use App\Models\PengumumanModel;
+use App\Models\PengaturanModel;
 
 class Admin extends BaseController
 {
@@ -13,6 +14,16 @@ class Admin extends BaseController
         $jadwalModel = new JadwalModel();
         $mediaModel  = new MediaModel();
         $pengModel   = new PengumumanModel();
+        $pengaturanModel = new PengaturanModel();
+
+        // mode online/offline ambil dari pengaturan
+        $pengaturan = $pengaturanModel->findAll();
+        $pengaturanData = [];
+        foreach ($pengaturan as $p) {
+            $pengaturanData[$p['keyname']] = $p['value'];
+        }
+
+        $currentMode = strtolower($pengaturanData['mode'] ?? 'online');
 
         $today = date('Y-m-d');
 
@@ -48,9 +59,29 @@ class Admin extends BaseController
             'medias'        => $medias,
             'pengumuman'    => $pengumuman,
             'apiStatusView' => $apiStatusView,
+            'pengaturan'    => $pengaturanData
         ]);
     }
 
+    public function changeMode($newMode = null)
+    {
+        $pengaturanModel = new PengaturanModel();
+        $currentMode = $pengaturanModel->where('keyname', 'mode')->first();
+        $newMode = strtolower($newMode);
+
+        if (!in_array($newMode, ['online', 'offline'])) {
+            return redirect()->back()->with('error', "Mode tidak valid: {$newMode}");
+        }
+
+        // update mode in database
+        if ($currentMode) {
+            $pengaturanModel->update('mode', ['value' => $newMode]);
+        } else {
+            $pengaturanModel->insert(['keyname' => 'mode', 'value' => $newMode]);
+        }
+
+        return redirect()->back()->with('success', "Mode berhasil diubah menjadi: {$newMode}");
+    }
 
     // upload media simple handler (POST file)
     public function media()
@@ -194,11 +225,12 @@ class Admin extends BaseController
         exit;
     }
 
-
-
     public function checkApi()
     {
-        $url = "https://api.myquran.com/v2/sholat/jadwal/1219/2025/01";
+        $today = date('d-m-Y');
+
+        // $url = "https://api.myquran.com/v2/sholat/jadwal/1219/2025/01";
+        $url = "https://api.aladhan.com/v1/timingsByAddress/$today?address=Jakarta";
 
         $ctx = stream_context_create(['http' => ['timeout' => 5]]);
         $res = @file_get_contents($url, false, $ctx);

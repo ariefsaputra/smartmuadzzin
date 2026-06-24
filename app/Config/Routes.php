@@ -44,3 +44,6 @@ $routes->group('admin/media', function ($r) {
     $r->get('delete/(:num)', 'Media::delete/$1');
     $r->post('reorder', 'Media::reorder'); // drag & drop
 });
+
+// MODE SWITCHING (Online / Offline)
+$routes->get('change-mode/(:segment)', 'Admin::changeMode/$1'); // change mode online/offline
