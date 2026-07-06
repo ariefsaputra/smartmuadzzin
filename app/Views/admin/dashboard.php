@@ -11,9 +11,64 @@
         <!-- JADWAL SHOLAT FULL -->
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition">
 
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold text-gray-800">Jadwal Sholat Hari Ini</h2>
-                <span class="text-sm text-gray-500"><?= date('l, d M Y') ?></span>
+            <?php
+            $currentMode = strtolower($pengaturan['mode'] ?? 'online');
+            ?>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-800">
+                        Jadwal Sholat Hari Ini
+                    </h2>
+
+                    <div class="flex items-center gap-2 mt-2">
+
+                        <?php if ($currentMode == 'online'): ?>
+
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                                ● MODE ONLINE
+                            </span>
+
+                        <?php else: ?>
+
+                            <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">
+                                ● MODE OFFLINE
+                            </span>
+
+                        <?php endif; ?>
+
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+
+                    <span class="text-sm text-gray-500">
+                        <?= date('l, d M Y') ?>
+                    </span>
+
+                    <?php if ($currentMode == 'online'): ?>
+
+                        <a href="<?= base_url('change-mode/offline') ?>"
+                            onclick="return confirm('Yakin ingin mengubah ke Mode Offline?')"
+                            class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition">
+
+                            Mode Offline
+
+                        </a>
+
+                    <?php else: ?>
+
+                        <a href="<?= base_url('change-mode/online') ?>"
+                            onclick="return confirm('Yakin ingin mengubah ke Mode Online?')"
+                            class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition">
+                            Mode Online
+                        </a>
+
+                    <?php endif; ?>
+
+                </div>
+
             </div>
 
             <?php
@@ -110,6 +165,14 @@
 
             <h3 class="text-sm text-gray-500 mb-3">Status Data Jadwal Sholat</h3>
 
+            <?php
+            // Ensure $apiStatusView is defined to avoid undefined variable errors
+            $apiStatusView = $apiStatusView ?? [];
+            $apiStatusView['ok'] = isset($apiStatusView['ok']) ? $apiStatusView['ok'] : false;
+            $apiStatusView['status'] = $apiStatusView['status'] ?? '-';
+            $apiStatusView['tanggal_data'] = $apiStatusView['tanggal_data'] ?? '-';
+            ?>
+
             <p class="text-lg font-semibold <?= $apiStatusView['ok'] ? 'text-green-600' : 'text-red-600' ?>">
                 <?= $apiStatusView['status'] ?>
             </p>
@@ -135,6 +198,31 @@
             <h3 class="text-sm text-gray-500 mb-3">Pengaturan Ringkas</h3>
 
             <div class="space-y-4 text-sm">
+                <div class="flex justify-between">
+                    <div>
+                        <p class="font-medium text-gray-800">Mode Jadwal</p>
+                        <p class="text-xs text-gray-500">
+                            <?= ucfirst($pengaturan['mode'] ?? 'online') ?>
+                        </p>
+                    </div>
+
+                    <?php if (($pengaturan['mode'] ?? 'online') == 'online'): ?>
+
+                        <a href="<?= base_url('change-mode/offline') ?>"
+                            class="text-red-600 hover:underline">
+                            Offline
+                        </a>
+
+                    <?php else: ?>
+
+                        <a href="<?= base_url('change-mode/online') ?>"
+                            class="text-green-600 hover:underline">
+                            Online
+                        </a>
+
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="flex justify-between">
                     <div>
