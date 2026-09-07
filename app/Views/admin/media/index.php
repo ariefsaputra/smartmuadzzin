@@ -65,10 +65,12 @@
 
 
 <script>
+<?php /*
 function currentCsrfToken() {
     const name = '<?= csrf_cookie_name() ?>=';
     return document.cookie.split('; ').find(row => row.startsWith(name))?.slice(name.length) || '';
 }
+*/ ?>
 
 function sortable() {
     return {
