@@ -7,6 +7,7 @@
 
     <form action="<?= base_url('admin/pengumuman/update/'.$pengumuman['id']) ?>" 
           method="post" x-data="editPengumuman()" x-init="initData()">
+        <?= csrf_field() ?>
 
         <!-- JUDUL -->
         <div class="mb-4">

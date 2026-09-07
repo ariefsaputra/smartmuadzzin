@@ -63,9 +63,12 @@
         </nav>
 
         <div class="mt-auto">
-            <a href="/logout" class="flex items-center gap-3 p-3 rounded-lg text-red-600 hover:bg-red-50 transition">
-                <i class="ph ph-sign-out text-xl"></i> Logout
-            </a>
+            <form action="<?= site_url('admin/logout') ?>" method="post">
+                <?= csrf_field() ?>
+                <button class="flex w-full items-center gap-3 rounded-lg p-3 text-red-600 transition hover:bg-red-50">
+                    <i class="ph ph-sign-out text-xl"></i> Logout
+                </button>
+            </form>
         </div>
     </aside>
 

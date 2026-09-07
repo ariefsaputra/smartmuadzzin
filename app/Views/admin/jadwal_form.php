@@ -6,6 +6,7 @@
     <h3 class="text-xl font-semibold mb-4">Input Jadwal Sholat</h3>
 
     <form method="post">
+        <?= csrf_field() ?>
 
         <div class="grid grid-cols-2 gap-4">
 

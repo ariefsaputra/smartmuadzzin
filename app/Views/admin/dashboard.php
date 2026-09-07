@@ -49,21 +49,17 @@
 
                     <?php if ($currentMode == 'online'): ?>
 
-                        <a href="<?= base_url('change-mode/offline') ?>"
-                            onclick="return confirm('Yakin ingin mengubah ke Mode Offline?')"
-                            class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition">
-
-                            Mode Offline
-
-                        </a>
+                        <form action="<?= site_url('admin/mode/offline') ?>" method="post" onsubmit="return confirm('Yakin ingin mengubah ke Mode Offline?')">
+                            <?= csrf_field() ?>
+                            <button class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition">Mode Offline</button>
+                        </form>
 
                     <?php else: ?>
 
-                        <a href="<?= base_url('change-mode/online') ?>"
-                            onclick="return confirm('Yakin ingin mengubah ke Mode Online?')"
-                            class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition">
-                            Mode Online
-                        </a>
+                        <form action="<?= site_url('admin/mode/online') ?>" method="post" onsubmit="return confirm('Yakin ingin mengubah ke Mode Online?')">
+                            <?= csrf_field() ?>
+                            <button class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition">Mode Online</button>
+                        </form>
 
                     <?php endif; ?>
 
@@ -208,17 +204,17 @@
 
                     <?php if (($pengaturan['mode'] ?? 'online') == 'online'): ?>
 
-                        <a href="<?= base_url('change-mode/offline') ?>"
-                            class="text-red-600 hover:underline">
-                            Offline
-                        </a>
+                        <form action="<?= site_url('admin/mode/offline') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <button class="text-red-600 hover:underline">Offline</button>
+                        </form>
 
                     <?php else: ?>
 
-                        <a href="<?= base_url('change-mode/online') ?>"
-                            class="text-green-600 hover:underline">
-                            Online
-                        </a>
+                        <form action="<?= site_url('admin/mode/online') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <button class="text-green-600 hover:underline">Online</button>
+                        </form>
 
                     <?php endif; ?>
 

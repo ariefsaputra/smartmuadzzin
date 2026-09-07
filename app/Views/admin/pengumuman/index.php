@@ -99,11 +99,10 @@
                                     Edit
                                 </a>
 
-                                <a href="<?= base_url('/admin/pengumuman/delete/' . $r['id']) ?>"
-                                    onclick="return confirm('Hapus pengumuman ini?')"
-                                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                                    Hapus
-                                </a>
+                                <form action="<?= site_url('admin/pengumuman/delete/' . $r['id']) ?>" method="post" class="inline" onsubmit="return confirm('Hapus pengumuman ini?')">
+                                    <?= csrf_field() ?>
+                                    <button class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Hapus</button>
+                                </form>
 
                             </td>
                         </tr>

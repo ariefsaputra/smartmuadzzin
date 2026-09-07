@@ -14,6 +14,7 @@
 
     <form action="<?= base_url('/admin/pengumuman/store') ?>" method="post"
         class="bg-white rounded-lg shadow-lg p-6 space-y-6">
+        <?= csrf_field() ?>
 
         <!-- JUDUL -->
         <div>

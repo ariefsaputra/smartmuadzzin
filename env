@@ -20,9 +20,18 @@ CI_ENVIRONMENT = development
 # APP
 #--------------------------------------------------------------------
 
-# app.baseURL = ''
+app.baseURL = 'http://localhost:8080/'
 # If you have trouble with `.`, you could also use `_`.
 # app_baseURL = ''
+
+# Admin credentials. Generate a password hash with PHP's password_hash() and
+# place the values in your local .env; never commit the actual credentials.
+admin.username =
+admin.passwordHash =
+
+# Token for scheduled synchronization. Use a unique random string and send it
+# in the X-Sync-Token header when POSTing to /api/sync.
+sync.token =
 # app.forceGlobalSecureRequests = false
 # app.CSPEnabled = false
 

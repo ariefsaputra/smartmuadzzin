@@ -6,44 +6,39 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Tv::index');                // layar TV publik
-$routes->get('tv/overlay/(:segment)', 'Tv::overlay/$1'); // overlay adzan/iqamah
+$routes->post('api/sync', 'ApiSync::sync');    // cron: requires X-Sync-Token
 
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+$routes->get('admin/login', 'AdminAuth::login');
+$routes->post('admin/login', 'AdminAuth::authenticate');
 
-    // Pengumuman
-    $routes->get('pengumuman',                'Pengumuman::index');
-    $routes->get('pengumuman/create',         'Pengumuman::create');
-    $routes->post('pengumuman/store',         'Pengumuman::store');
+$routes->group('admin', ['filter' => 'adminauth'], function($routes) {
+    $routes->get('', 'Admin::dashboard');
+    $routes->post('logout', 'AdminAuth::logout');
+    $routes->post('mode/(:segment)', 'Admin::changeMode/$1');
+    $routes->match(['get', 'post'], 'jadwal', 'Admin::jadwal');
+    $routes->post('jadwal/sync', 'Admin::syncJadwal');
+    $routes->post('api/check', 'Admin::checkApi');
+    $routes->get('pengaturan', 'Admin::pengaturan');
+    $routes->post('pengaturan/save', 'Admin::savePengaturan');
 
-    $routes->get('pengumuman/edit/(:num)',    'Pengumuman::edit/$1');
-    $routes->post('pengumuman/update/(:num)', 'Pengumuman::update/$1');
+    $routes->group('pengumuman', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+        $routes->get('',                'Pengumuman::index');
+        $routes->get('create',         'Pengumuman::create');
+        $routes->post('store',         'Pengumuman::store');
+        $routes->get('edit/(:num)',    'Pengumuman::edit/$1');
+        $routes->post('update/(:num)', 'Pengumuman::update/$1');
+        $routes->post('delete/(:num)', 'Pengumuman::delete/$1');
+    });
 
-    $routes->get('pengumuman/delete/(:num)',  'Pengumuman::delete/$1');
-
+    $routes->group('media', function ($routes) {
+        $routes->get('', 'Media::index');
+        $routes->get('create', 'Media::create');
+        $routes->post('store', 'Media::store');
+        $routes->get('edit/(:num)', 'Media::edit/$1');
+        $routes->post('update/(:num)', 'Media::update/$1');
+        $routes->post('delete/(:num)', 'Media::delete/$1');
+        $routes->post('reorder', 'Media::reorder');
+    });
 });
 
-$routes->get('admin', 'Admin::dashboard');     // panel admin minimal
-$routes->match(['get', 'post'], 'admin/jadwal', 'Admin::jadwal');
-$routes->get('admin/jadwal/sync', 'Admin::syncJadwal');
-
-$routes->get('api/sync', 'ApiSync::sync');     // cron / manual sync
-$routes->get('api/jadwal/(:segment)', 'Tv::jadwalJson/$1'); // json jadwal date
-$routes->post('admin/api/check', 'Admin::checkApi');
-
-//admin Pengaturan
-$routes->get('admin/pengaturan', 'Admin::pengaturan');
-$routes->post('admin/pengaturan/save', 'Admin::savePengaturan');
-
-// admin media slider
-$routes->group('admin/media', function ($r) {
-    $r->get('/', 'Media::index');
-    $r->get('create', 'Media::create');
-    $r->post('store', 'Media::store');
-    $r->get('edit/(:num)', 'Media::edit/$1');
-    $r->post('update/(:num)', 'Media::update/$1');
-    $r->get('delete/(:num)', 'Media::delete/$1');
-    $r->post('reorder', 'Media::reorder'); // drag & drop
-});
-
-// MODE SWITCHING (Online / Offline)
-$routes->get('change-mode/(:segment)', 'Admin::changeMode/$1'); // change mode online/offline
+// Cron endpoint should be protected separately before enabling it in production.

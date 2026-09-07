@@ -1,270 +1,64 @@
-<div
-  x-show="overlay.active"
-  x-transition.opacity
-  class="fixed inset-0 z-[9999] text-white overflow-hidden">
+<div x-show="overlay.active" x-cloak x-transition.opacity class="fixed inset-0 z-[9999] overflow-hidden text-[#fff9e9]">
+  <div class="absolute inset-0 bg-cover bg-center" style="background-image: linear-gradient(120deg, rgba(0,59,65,.94), rgba(9,116,111,.72) 45%, rgba(255,146,68,.62)), url('<?= base_url('assets/bg/mosque-bg-spesial.jpg') ?>');"></div>
+  <div class="absolute inset-0 bg-slate-950/20"></div>
 
-  <!-- BACKGROUND GRADIENT (SOLID, NON-TRANSPARAN) -->
-  <div class="absolute inset-0 bg-gradient-to-br from-emerald-900 via-slate-900 to-black"></div>
-
-  <!-- VIGNETTE HALUS -->
-  <div
-    class="absolute inset-0"
-    style="
-      background: radial-gradient(
-        circle at center,
-        rgba(255,255,255,0.06) 0%,
-        rgba(0,0,0,0.35) 60%,
-        rgba(0,0,0,0.75) 100%
-      );
-    "></div>
-
-  <!-- CONTENT WRAPPER -->
-  <div class="relative z-10 w-full h-full flex flex-col justify-center items-center">
-
-    <!-- JAM + TANGGAL (INLINE, TENGAH ATAS) -->
-    <div class="absolute top-10 left-1/2 -translate-x-1/2 z-[10000] select-none text-center">
-
-      <!-- JAM -->
-      <div class="flex items-end justify-center space-x-3">
-
-        <!-- HH -->
-        <span
-          class="text-[5.4rem] font-semibold tracking-wider leading-none text-white
-           drop-shadow-[0_7px_22px_rgba(0,0,0,0.5)]"
-          x-text="$store.clock.nowHHMM.slice(0,2)">
-        </span>
-
-        <!-- : -->
-        <span
-          class="text-[5.4rem] font-light leading-none text-white/55">
-          :
-        </span>
-
-        <!-- MM -->
-        <span
-          class="text-[5.4rem] font-semibold tracking-wider leading-none text-white
-           drop-shadow-[0_7px_22px_rgba(0,0,0,0.5)]"
-          x-text="$store.clock.nowHHMM.slice(3,5)">
-        </span>
-
-        <!-- SS -->
-        <span
-          class="ml-3 mb-3 text-[3.4rem] font-medium leading-none text-teal-200/85"
-          x-text="$store.clock.nowSS">
-        </span>
-
+  <div class="relative h-full px-[3.5vw] py-[4vh]">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="text-[clamp(.7rem,1.2vw,1.3rem)] font-semibold tracking-[.45em] text-white/75">MASJID</div>
+        <div class="mt-1 text-[clamp(1.5rem,2.6vw,3rem)] font-extrabold leading-none"><?= esc($data['nama_masjid'] ?? '') ?></div>
+        <div class="mt-2 text-[clamp(.55rem,.9vw,1rem)] tracking-[.28em] text-white/65"><?= esc($data['alamat_masjid'] ?? '') ?></div>
       </div>
-
-      <!-- TANGGAL (MASEHI + HIJRIYAH) -->
-      <div
-        class="mt-3 text-lg md:text-xl font-medium tracking-wide text-white/80 drop-shadow-[0_4px_16px_rgba(0,0,0,0.45)] flex justify-center items-center space-x-4">
-        <!-- MASEHI -->
-        <span>
-          <span x-text="$store.clock.dayName"></span>,
-          <span x-text="$store.clock.dateFull"></span>
-        </span>
-
-        <!-- SEPARATOR -->
-        <span class="opacity-50">|</span>
-
-        <!-- HIJRIYAH -->
-        <span class="text-emerald-300/85">
-          <?= esc($jadwal['hijriyah'] ?? '') ?>
-        </span>
+      <div class="flex items-center gap-[2vw] text-right">
+        <div class="border-r border-white/45 pr-[2vw]">
+          <div class="text-[clamp(.8rem,1.3vw,1.5rem)]" x-text="`${$store.clock.dayName}, ${$store.clock.dateFull}`"></div>
+          <div class="mt-1 text-[clamp(.65rem,1vw,1.1rem)] text-white/70"><?= esc($jadwal['hijriyah'] ?? '') ?></div>
+        </div>
+        <div class="text-[clamp(2.5rem,5vw,6rem)] font-extrabold leading-none tabular-nums" x-text="$store.clock.nowHHMM"></div>
       </div>
-
     </div>
 
-    <!-- STATE: MENJELANG ADZAN -->
-    <template x-if="overlay.state === 'menjelang_adzan'">
-      <div class="text-center mt-28 select-none">
-
-        <!-- LABEL -->
-        <div class="text-[3rem] uppercase tracking-[0.5em] text-amber-300/90 mb-8">
-          Menjelang Adzan
+    <div class="absolute inset-x-0 top-[20%] flex flex-col items-center text-center">
+      <div x-show="!['waktu_sholat', 'jumat_sholat'].includes(overlay.state)" class="text-[clamp(3rem,6vw,7rem)] leading-none">۩</div>
+      <template x-if="overlay.state === 'adzan'">
+        <div class="mt-[2vh] flex flex-col items-center">
+          <div class="text-[clamp(5rem,10vw,12rem)] font-extrabold leading-none tracking-[.2em]">ADZAN</div>
+          <div class="mt-[1vh] text-[clamp(1rem,2vw,2.3rem)] font-medium tracking-[.55em] text-white/90">SEDANG BERKUMANDANG</div>
+          <div class="mt-[3vh] h-1 w-[clamp(3rem,6vw,7rem)] rounded-full bg-[#fff9e9]"></div>
+          <div class="mt-[3vh] text-[clamp(.8rem,1.4vw,1.6rem)] font-medium tracking-[.5em] text-white/70">MARI MENUJU MASJID</div>
         </div>
-
-        <!-- NAMA SHOLAT -->
-        <div
-          class="text-[9.5rem]
-                font-extrabold
-                tracking-wide
-                mb-16
-                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
-                bg-clip-text text-transparent
-                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
-          <span x-text="overlay.namaSholat"></span>
+      </template>
+      <template x-if="['waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
+        <div class="mt-[16vh] flex flex-col items-center">
+          <div class="text-[clamp(5rem,10vw,12rem)] font-extrabold leading-none tracking-[.2em]">SHOLAT</div>
+          <div class="mt-[2vh] text-[clamp(1rem,2vw,2.3rem)] font-medium tracking-[.55em] text-white/90">MARI FOKUS BERIBADAH</div>
         </div>
-
-        <!-- COUNTDOWN -->
-        <div
-          class="text-[14rem] font-extrabold tracking-[0.18em] leading-none
-            text-emerald-300
-            drop-shadow-[0_20px_60px_rgba(16,185,129,0.45)] mb-14"
-          x-text="overlay.countdown">
+      </template>
+      <template x-if="!['adzan', 'waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
+        <div class="flex flex-col items-center">
+          <div class="mt-[1vh] text-[clamp(1.5rem,3vw,3.5rem)] font-extrabold tracking-[.35em]" x-text="overlayTitle()"></div>
+          <div class="mt-[1vh] text-[clamp(.75rem,1.4vw,1.6rem)] font-medium tracking-[.45em] text-white/65" x-text="overlayMessage()"></div>
+          <div x-show="overlay.countdown" class="mt-[3vh] text-[clamp(6rem,13vw,15rem)] font-extrabold leading-none tracking-tight tabular-nums" x-text="overlay.countdown"></div>
+          <div x-show="overlay.countdown" class="mt-[1vh] flex w-[clamp(18rem,35vw,42rem)] justify-between px-[3vw] text-[clamp(.6rem,1vw,1.1rem)] font-semibold tracking-[.45em] text-white/60">
+            <span>MENIT</span><span>DETIK</span>
+          </div>
         </div>
+      </template>
+    </div>
 
-        <!-- PESAN -->
-        <div class="text-[4rem] font-medium text-white/90">
-          Bersiaplah untuk melaksanakan sholat
+    <div class="absolute inset-x-0 bottom-[7vh] text-center">
+      <template x-if="['waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
+        <div>
+          <p class="mx-auto max-w-3xl text-[clamp(.75rem,1.15vw,1.35rem)] italic leading-relaxed text-white/75">"Sungguh beruntung orang-orang yang beriman, yaitu mereka yang khusyuk dalam sholatnya."</p>
+          <p class="mt-1 text-[clamp(.55rem,.8vw,.9rem)] text-white/55">(QS. Al-Mu'minun: 1-2)</p>
         </div>
-
-      </div>
-
-    </template>
-
-    <!-- STATE: ADZAN -->
-    <template x-if="overlay.state === 'adzan'">
-      <div class="text-center mt-28 select-none">
-
-        <!-- LABEL -->
-        <div class="text-[3rem] uppercase tracking-[0.5em] text-emerald-300/80 mb-8">
-          Adzan
+      </template>
+      <template x-if="!['waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
+        <div>
+          <p class="mx-auto max-w-3xl text-[clamp(.75rem,1.15vw,1.35rem)] italic leading-relaxed text-white/75">"Dirikanlah shalat, sesungguhnya shalat itu mencegah dari perbuatan keji dan mungkar."</p>
+          <p class="mt-1 text-[clamp(.55rem,.8vw,.9rem)] text-white/55">(QS. Al-Ankabut: 45)</p>
         </div>
-
-        <!-- NAMA SHOLAT -->
-        <div
-          class="text-[9.5rem]
-                font-extrabold
-                tracking-wide
-                mb-16
-                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
-                bg-clip-text text-transparent
-                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
-          <span x-text="overlay.namaSholat"></span>
-        </div>
-
-        <!-- PESAN -->
-        <div class="text-[4.2rem] font-medium text-white/85">
-          Mohon tetap khusyuk mendengarkan adzan
-        </div>
-
-      </div>
-    </template>
-
-
-
-    <!-- STATE: MENJELANG IQAMAH -->
-    <template x-if="overlay.state === 'menjelang_iqamah'">
-      <div class="text-center mt-28 select-none">
-
-        <!-- LABEL -->
-        <div class="text-[3rem] uppercase tracking-[0.5em] text-amber-300/90 mb-8">
-          Menuju Iqamah
-        </div>
-
-        <!-- COUNTDOWN -->
-        <div
-          class="text-[14.5rem] font-extrabold tracking-[0.2em] leading-none
-                  text-white
-                  drop-shadow-[0_24px_70px_rgba(255,255,255,0.25)] mb-16"
-          x-text="overlay.countdown">
-        </div>
-
-        <!-- PESAN -->
-        <div class="text-[4.2rem] font-semibold text-emerald-200">
-          Segera rapatkan dan luruskan shaf
-        </div>
-
-      </div>
-
-    </template>
-
-
-    <!-- STATE: SHOLAT BERLANGSUNG -->
-    <template x-if="overlay.state === 'sholat_berlangsung'">
-      <div class="text-center mt-28 select-none">
-
-        <!-- LABEL -->
-        <div class="text-[3rem] uppercase tracking-[0.5em] text-slate-300 mb-8">
-          Waktu Sholat
-        </div>
-
-        <!-- NAMA SHOLAT -->
-        <div
-          class="text-[9.5rem]
-                font-extrabold
-                tracking-wide
-                mb-16
-                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
-                bg-clip-text text-transparent
-                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
-          <span x-text="overlay.namaSholat"></span>
-        </div>
-
-        <!-- PESAN -->
-        <div class="text-[4rem] font-medium text-white/80">
-          Harap tenang dan khusyuk dalam sholat
-        </div>
-
-      </div>
-
-    </template>
-
-    <!-- JUMAT PRE -->
-    <template x-if="overlay.state === 'jumat_pre'">
-      <div class="text-center space-y-6">
-        <!-- PRE JUMAT -->
-        <div class="text-[8.5rem] font-extrabold text-white mb-10">
-          Persiapan Sholat Jumat
-        </div>
-
-        <div class="text-[4.5rem] text-amber-300 mb-12">
-          Menuju Adzan Dzuhur
-        </div>
-
-        <div
-          class="text-[15rem] font-extrabold tracking-[0.22em]
-              text-emerald-300
-              drop-shadow-[0_24px_70px_rgba(16,185,129,0.5)]"
-          x-text="overlay.countdown">
-        </div>
-      </div>
-    </template>
-
-    <!-- JUMAT ADZAN -->
-    <template x-if="overlay.state === 'jumat_adzan'">
-      <div class="text-center space-y-6">
-        <div class="text-6xl font-extrabold animate-pulse">
-          ADZAN JUMAT SEDANG BERLANGSUNG
-        </div>
-      </div>
-    </template>
-
-    <!-- JUMAT SHOLAT -->
-    <template x-if="overlay.state === 'jumat_sholat'">
-      <div class="text-center space-y-6">
-        <div class="text-6xl font-bold animate-pulse">WAKTU SHOLAT JUMAT</div>
-        <div class="text-4xl opacity-80">Harap Tenang</div>
-      </div>
-    </template>
-
-    <!-- STATE: WAKTU SHOLAT -->
-    <template x-if="overlay.state === 'waktu_sholat'">
-      <div class="text-center space-y-8">
-        <!-- LABEL -->
-        <div class="text-[3rem] uppercase tracking-[0.5em] text-slate-300 mb-8">
-          Waktu Sholat
-        </div>
-
-        <!-- NAMA SHOLAT -->
-        <div
-          class="text-[9.5rem]
-                font-extrabold
-                tracking-wide
-                mb-16
-                bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300
-                bg-clip-text text-transparent
-                drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]">
-          <span x-text="overlay.namaSholat"></span>
-        </div>
-
-        <!-- PESAN -->
-        <div class="text-[4rem] font-medium text-white/80">
-          Harap tenang dan khusyuk dalam sholat
-        </div>
-
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </div>
