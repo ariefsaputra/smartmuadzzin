@@ -24,8 +24,21 @@ class Media extends BaseController
         $file = $this->request->getFile('file');
 
         // Validasi dasar
-        if (!$file->isValid()) {
+        if ($file === null || ! $file->isValid()) {
             return redirect()->back()->with('error', 'Upload tidak valid.');
+        }
+
+        $allowedMimes = [
+            'image/jpeg' => 'image',
+            'image/png'  => 'image',
+            'image/webp' => 'image',
+            'video/mp4'  => 'video',
+            'video/webm' => 'video',
+        ];
+        $mime = $file->getMimeType();
+
+        if (! isset($allowedMimes[$mime]) || $file->getSizeByUnit('mb') > 50) {
+            return redirect()->back()->with('error', 'Media harus berupa JPG, PNG, WEBP, MP4, atau WEBM dengan ukuran maksimal 50 MB.');
         }
 
         // Dapatkan nama baru yang aman
@@ -34,9 +47,7 @@ class Media extends BaseController
         // Pindahkan file ke writable/uploads
         $file->move(FCPATH . 'writable/uploads', $newName);
 
-        // Dapatkan tipe MIME dari client (aman)
-        $mime = $file->getClientMimeType();
-        $type = (strpos($mime, 'video') !== false) ? 'video' : 'image';
+        $type = $allowedMimes[$mime];
 
         // Simpan ke database
         $model = new MediaModel();
@@ -79,7 +90,10 @@ class Media extends BaseController
         $model = new MediaModel();
         $data = $model->find($id);
 
-        if ($data) unlink('writable/uploads/' . $data['filename']);
+        $filePath = FCPATH . 'writable/uploads/' . ($data['filename'] ?? '');
+        if ($data && is_file($filePath)) {
+            unlink($filePath);
+        }
 
         $model->delete($id);
 

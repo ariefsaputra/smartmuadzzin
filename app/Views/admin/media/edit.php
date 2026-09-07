@@ -4,6 +4,7 @@
 <h1 class="text-xl font-bold mb-4">Edit Media</h1>
 
 <form action="<?= base_url('admin/media/update/' . $m['id']) ?>" method="post" class="space-y-4">
+    <?= csrf_field() ?>
 
     <div>
         <label>Judul</label>

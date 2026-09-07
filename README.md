@@ -93,7 +93,7 @@ cp env .env
 Edit .env:
 
 CI_ENVIRONMENT = production
-app.baseURL = 'http://localhost'
+app.baseURL = 'http://localhost:8080/'
 database.default.database = smartmuadzzin
 
 ### 4️⃣ Jalankan Aplikasi
@@ -104,6 +104,10 @@ Akses:
 Admin: http://localhost:8080/admin
 
 TV Display: http://localhost:8080
+
+### Deployment Check
+
+Pastikan perintah `php -v` menunjukkan PHP 8.1 atau lebih baru sebelum menjalankan Composer, Spark, atau PHPUnit. Panduan deployment tersedia di `docs/DEPLOYMENT.md`.
 
 ### 📡 Mode Online vs Offline
 - Kondisi	Perilaku

@@ -1,11 +1,6 @@
 <?= $this->extend('admin/layout') ?>
 <?= $this->section('content') ?>
 
-<!-- LOAD SELECT2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <div class="bg-white p-6 rounded-xl shadow-sm border max-w-2xl">
 
     <h3 class="text-xl font-semibold mb-6">Pengaturan Masjid</h3>
@@ -17,6 +12,7 @@
     <?php endif; ?>
 
     <form method="post" action="<?= base_url('admin/pengaturan/save') ?>">
+        <?= csrf_field() ?>
 
         <!-- Nama Masjid -->
         <div class="mb-4">
@@ -38,19 +34,20 @@
                 rows="2"><?= $data['alamat_masjid'] ?? '' ?></textarea>
         </div>
 
-        <!-- PILIH KOTA SELECT2 -->
         <div class="mb-4">
-            <label class="text-sm text-gray-600">Kota</label>
-            <select id="selectKota" class="w-full p-2 border rounded-lg">
-                <?php if (isset($data['kode_kota'])): ?>
-                    <option value="<?= $data['kode_kota'] ?>" selected><?= $data['nama_kota'] ?></option>
-                <?php endif; ?>
-            </select>
+            <label for="kodeKota" class="text-sm text-gray-600">Kode Kota MyQuran</label>
+            <input id="kodeKota" name="kode_kota" type="text" inputmode="numeric" pattern="[0-9]+"
+                value="<?= esc($data['kode_kota'] ?? '') ?>"
+                class="w-full p-2 mt-1 border rounded-lg" required>
+            <p class="mt-1 text-xs text-gray-500">Masukkan ID kota dari MyQuran. Nilai ini tetap dapat diubah tanpa koneksi internet.</p>
         </div>
 
-        <!-- Hidden field untuk disimpan -->
-        <input type="hidden" id="kodeKota" name="kode_kota" value="<?= $data['kode_kota'] ?? '' ?>">
-        <input type="hidden" id="namaKota" name="nama_kota" value="<?= $data['nama_kota'] ?? '' ?>">
+        <div class="mb-4">
+            <label for="namaKota" class="text-sm text-gray-600">Nama Kota</label>
+            <input id="namaKota" name="nama_kota" type="text"
+                value="<?= esc($data['nama_kota'] ?? '') ?>"
+                class="w-full p-2 mt-1 border rounded-lg" required>
+        </div>
 
         <div class="mb-4">
             <label class="text-sm text-gray-600">Running Text</label>
@@ -101,41 +98,5 @@
 
     </form>
 </div>
-
-<!-- INIT SELECT2 + LOAD DATA API -->
-<script>
-    $(document).ready(function() {
-        $('#selectKota').select2({
-            placeholder: "Ketik nama kota...",
-            allowClear: true,
-            ajax: {
-                url: "https://api.myquran.com/v2/sholat/kota/semua",
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-
-                    const items = data.data.map(item => ({
-                        id: item.id,
-                        text: item.lokasi
-                    }));
-
-                    return {
-                        results: items
-                    };
-                },
-                cache: true
-            }
-        });
-
-        // Simpan nilai setelah dipilih
-        $('#selectKota').on('select2:select', function(e) {
-            let id = e.params.data.id;
-            let text = e.params.data.text;
-
-            $('#kodeKota').val(id);
-            $('#namaKota').val(text);
-        });
-    });
-</script>
 
 <?= $this->endSection() ?>

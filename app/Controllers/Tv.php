@@ -22,10 +22,20 @@ class Tv extends BaseController
             $pengaturan[$row['keyname']] = $row['value'];
         }
         
-        if($pengaturan['mode'] ?? 'online' == 'online') {
-            // jika mode online, pastikan jadwal hari ini sudah ada di database
+        if (($pengaturan['mode'] ?? 'online') === 'online') {
+            // Refresh when the configured city changes; otherwise preserve the
+            // local record when the remote provider is unavailable.
             $jadwalService = new JadwalSholatService();
-            $jadwalService->getTodayPrayer(); // ini akan otomatis update jadwal hari ini dari API
+            $kodeKota = trim((string) ($pengaturan['kode_kota'] ?? ''));
+            $forceRefresh = $kodeKota !== '' && ($pengaturan['jadwal_kode_kota'] ?? '') !== $kodeKota;
+            $syncedSchedule = $jadwalService->getTodayPrayer($kodeKota, $forceRefresh);
+
+            if ($syncedSchedule !== null && $forceRefresh) {
+                $db->table('pengaturan')->replace([
+                    'keyname' => 'jadwal_kode_kota',
+                    'value'   => $kodeKota,
+                ]);
+            }
         }
 
         $nama_masjid   = $pengaturan['nama_masjid']   ?? 'MASJID';
@@ -73,10 +83,30 @@ class Tv extends BaseController
             ->findAll();
 
 
+        $prayerTimes = [
+            ['name' => 'Imsak', 'time' => $jadwal['imsak'], 'icon' => '🌙', 'color' => 'text-indigo-500'],
+            ['name' => 'Subuh', 'time' => $jadwal['subuh'], 'icon' => '🌅', 'color' => 'text-amber-500'],
+            ['name' => 'Syuruq', 'time' => $jadwal['syuruq'], 'icon' => '☀', 'color' => 'text-yellow-500'],
+            ['name' => 'Dhuha', 'time' => $jadwal['dhuha'], 'icon' => '☀', 'color' => 'text-orange-500'],
+            ['name' => 'Dzuhur', 'time' => $jadwal['dzuhur'], 'icon' => '☀', 'color' => 'text-amber-600'],
+            ['name' => 'Ashar', 'time' => $jadwal['ashar'], 'icon' => '🌤', 'color' => 'text-orange-600'],
+            ['name' => 'Maghrib', 'time' => $jadwal['maghrib'], 'icon' => '🌇', 'color' => 'text-rose-500'],
+            ['name' => 'Isya', 'time' => $jadwal['isya'], 'icon' => '🌙', 'color' => 'text-indigo-600'],
+        ];
+
+        $slides = array_map(static function (array $media): array {
+            return [
+                'url' => base_url('writable/uploads/' . $media['filename']),
+                'type' => $media['type'],
+                'title' => $media['filename'],
+                'duration' => (int) ($media['duration'] ?: 5000),
+            ];
+        }, $medias);
+
         /* ==========================
          * 5. Kirim ke View
          * ========================== */
-        return view('tv_main', [
+        return view('tv/layout', [
             'data' => [
                 'nama_masjid'   => $nama_masjid,
                 'alamat_masjid' => $alamat_masjid,
@@ -84,7 +114,22 @@ class Tv extends BaseController
             'jadwal'       => $jadwal,
             'medias'       => $medias,
             'pengumuman'   => $pengumuman,
-            'running_text' => $running_text
+            'running_text' => $running_text,
+            'pengaturan'   => $pengaturan,
+            'mosque'       => ['name' => $nama_masjid, 'address' => $alamat_masjid],
+            'prayerTimes'  => $prayerTimes,
+            'slides'       => $slides,
+            'dateMasehi'   => date('d F Y'),
+            'dayName'      => [
+                'Sunday' => 'Minggu',
+                'Monday' => 'Senin',
+                'Tuesday' => 'Selasa',
+                'Wednesday' => 'Rabu',
+                'Thursday' => 'Kamis',
+                'Friday' => 'Jumat',
+                'Saturday' => 'Sabtu',
+            ][date('l')] ?? date('l'),
+            'dateHijriyah' => $jadwal['hijriyah'] ?? '',
         ]);
     }
 }

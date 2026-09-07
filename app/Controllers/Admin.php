@@ -148,8 +148,8 @@ class Admin extends BaseController
 
         $kode_kota = $peng['kode_kota'] ?? null;
 
-        $bulan = $req->getGet('bulan');   // GET, bukan POST
-        $tahun = $req->getGet('tahun');
+        $bulan = $req->getPost('bulan');
+        $tahun = $req->getPost('tahun');
 
         if (!$kode_kota || !$bulan || !$tahun) {
             echo "data: " . json_encode(['error' => "Parameter tidak lengkap"]) . "\n\n";
@@ -182,19 +182,13 @@ class Admin extends BaseController
 
             $tanggal = $row['date'];
 
-            $hijriApiUrl = "https://api.myquran.com/v2/cal/hijr/{$tanggal}";
-            $hijriCurl = file_get_contents($hijriApiUrl);
-            $hijriJson = json_decode($hijriCurl, true);
-
-            $hijriDate = null;
-            if ($hijriJson && $hijriJson['status'] === true) {
-                $hijriDate = $hijriJson['data']['date'][1];
-                // contoh: "21 Muharram 1447 H"
-            }
+            // Hijriyah is fetched only for the current display day by
+            // JadwalSholatService. Avoid one remote request for every day.
+            $exists = $jadwalModel->where('tanggal', $tanggal)->first();
 
             $save = [
                 'tanggal' => $tanggal,
-                'hijriyah' => $hijriDate,
+                'hijriyah' => $exists['hijriyah'] ?? null,
                 'imsak'   => $row['imsak'] . ":00",
                 'subuh'   => $row['subuh'] . ":00",
                 'syuruq'  => $row['terbit'] . ":00",
@@ -205,8 +199,6 @@ class Admin extends BaseController
                 'isya'    => $row['isya'] . ":00",
                 'source'  => 'myquran'
             ];
-
-            $exists = $jadwalModel->where('tanggal', $tanggal)->first();
 
             if ($exists) $jadwalModel->update($exists['id'], $save);
             else $jadwalModel->insert($save);
@@ -227,10 +219,26 @@ class Admin extends BaseController
 
     public function checkApi()
     {
-        $today = date('d-m-Y');
+        $rows = db_connect()->table('pengaturan')->get()->getResultArray();
+        $pengaturan = [];
+        foreach ($rows as $row) {
+            $pengaturan[$row['keyname']] = $row['value'];
+        }
 
-        // $url = "https://api.myquran.com/v2/sholat/jadwal/1219/2025/01";
-        $url = "https://api.aladhan.com/v1/timingsByAddress/$today?address=Jakarta";
+        $kodeKota = trim((string) ($pengaturan['kode_kota'] ?? ''));
+        if ($kodeKota === '') {
+            return $this->response->setStatusCode(422)->setJSON([
+                'status' => 'error',
+                'msg' => 'Kode kota belum dikonfigurasi.'
+            ]);
+        }
+
+        $url = sprintf(
+            'https://api.myquran.com/v2/sholat/jadwal/%s/%s/%s',
+            rawurlencode($kodeKota),
+            date('Y'),
+            date('m')
+        );
 
         $ctx = stream_context_create(['http' => ['timeout' => 5]]);
         $res = @file_get_contents($url, false, $ctx);
@@ -262,7 +270,8 @@ class Admin extends BaseController
             'active' => 'pengaturan',
             'title'  => 'Pengaturan Masjid',
             'header' => 'Pengaturan Sistem',
-            'data'   => $pengaturan
+            'data'   => $pengaturan,
+            'pengaturan' => $pengaturan,
         ]);
     }
 
@@ -276,7 +285,12 @@ class Admin extends BaseController
             'alamat_masjid' => $this->request->getPost('alamat_masjid'),
             'kode_kota'    => $this->request->getPost('kode_kota'),
             'nama_kota'    => $this->request->getPost('nama_kota'),
-            'running_text' => $this->request->getPost('running_text')
+            'running_text' => $this->request->getPost('running_text'),
+            'durasi_menjelang_adzan'  => $this->request->getPost('durasi_menjelang_adzan'),
+            'durasi_adzan'            => $this->request->getPost('durasi_adzan'),
+            'durasi_menjelang_iqamah' => $this->request->getPost('durasi_menjelang_iqamah'),
+            'durasi_waktu_sholat'     => $this->request->getPost('durasi_waktu_sholat'),
+            'durasi_khutbah_jumat'    => $this->request->getPost('durasi_khutbah_jumat'),
         ];
 
         // simpan satu per satu

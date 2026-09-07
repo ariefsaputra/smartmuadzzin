@@ -195,6 +195,8 @@
     <div id="persistentPrayer" aria-hidden="true">
         <div class="prayer-grid px-4">
             <?php
+            $jadwal = $jadwal ?? [];
+
             $items = [
                 ['Imsak',   $jadwal['imsak'],   'p-imsak'],
                 ['Subuh',   $jadwal['subuh'],   'p-subuh'],
@@ -250,8 +252,8 @@
                 slideTimer: null,
                 medias: [
                     <?php foreach ($medias as $m): ?> {
-                            url: "<?= base_url('writable/uploads/' . $m['filename']) ?>",
-                            type: "<?= $m['type'] ?>",
+                            url: <?= json_encode(base_url('writable/uploads/' . $m['filename']), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                            type: <?= json_encode($m['type'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
                             duration: <?= (int)$m['duration'] ?: 5000 ?>
                         },
                     <?php endforeach; ?>
@@ -261,9 +263,9 @@
                 announcements: [
                     <?php foreach ($pengumuman as $p): ?> {
                             id: <?= $p['id'] ?>,
-                            kategori: "<?= $p['kategori'] ?>",
-                            judul: `<?= esc($p['judul']) ?>`,
-                            isi: `<?= esc($p['isi']) ?>`,
+                            kategori: <?= json_encode($p['kategori'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                            judul: <?= json_encode($p['judul'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                            isi: <?= json_encode($p['isi'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
                             duration: <?= (int)$p['durasi'] ?: 8000 ?>
                         },
                     <?php endforeach; ?>
@@ -273,14 +275,14 @@
 
                 // prayer times (from controller)
                 prayerTimes: {
-                    imsak: "<?= $jadwal['imsak'] ?>",
-                    subuh: "<?= $jadwal['subuh'] ?>",
-                    syuruq: "<?= $jadwal['syuruq'] ?>",
-                    dhuha: "<?= $jadwal['dhuha'] ?>",
-                    dzuhur: "<?= $jadwal['dzuhur'] ?>",
-                    ashar: "<?= $jadwal['ashar'] ?>",
-                    maghrib: "<?= $jadwal['maghrib'] ?>",
-                    isya: "<?= $jadwal['isya'] ?>"
+                    imsak: <?= json_encode($jadwal['imsak'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    subuh: <?= json_encode($jadwal['subuh'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    syuruq: <?= json_encode($jadwal['syuruq'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    dhuha: <?= json_encode($jadwal['dhuha'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    dzuhur: <?= json_encode($jadwal['dzuhur'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    ashar: <?= json_encode($jadwal['ashar'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    maghrib: <?= json_encode($jadwal['maghrib'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+                    isya: <?= json_encode($jadwal['isya'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
                 },
 
                 overlay: {
@@ -437,35 +439,46 @@
                     // title
                     const titleEl = document.getElementById('annTitle');
                     const contentEl = document.getElementById('annContent');
-                    if (titleEl) titleEl.innerText = ann.judul || '';
+                    if (titleEl) titleEl.textContent = ann.judul || '';
                     if (!contentEl) return;
+                    contentEl.replaceChildren();
 
                     // render by category
                     if (ann.kategori === 'keuangan_jumat') {
-                        let rows = ann.isi.split('\n').filter(r => r.trim() !== '');
-                        let html = `<table class="ann-table w-full">`;
-                        rows.forEach(r => {
-                            let parts = r.split('=');
-                            let label = (parts[0] || '').trim();
-                            let val = (parts[1] || '').trim();
-                            html += `<tr><th>${label}</th><td>${val}</td></tr>`;
+                        const table = document.createElement('table');
+                        table.className = 'ann-table w-full';
+                        ann.isi.split('\n').filter(r => r.trim() !== '').forEach(r => {
+                            const [label = '', ...values] = r.split('=');
+                            const tr = document.createElement('tr');
+                            const th = document.createElement('th');
+                            const td = document.createElement('td');
+                            th.textContent = label.trim();
+                            td.textContent = values.join('=').trim();
+                            tr.append(th, td);
+                            table.append(tr);
                         });
-                        html += `</table>`;
-                        contentEl.innerHTML = html;
+                        contentEl.append(table);
                         return;
                     }
 
                     if (ann.kategori === 'imam_khatib') {
-                        let lines = ann.isi.split('\n').map(l => l.trim()).filter(l => l !== '');
-                        let html = `<div class="space-y-3">`;
-                        lines.forEach(l => html += `<div class="text-2xl">${l}</div>`);
-                        html += `</div>`;
-                        contentEl.innerHTML = html;
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'space-y-3';
+                        ann.isi.split('\n').map(l => l.trim()).filter(l => l !== '').forEach(line => {
+                            const item = document.createElement('div');
+                            item.className = 'text-2xl';
+                            item.textContent = line;
+                            wrapper.append(item);
+                        });
+                        contentEl.append(wrapper);
                         return;
                     }
 
                     // default umum
-                    contentEl.innerHTML = `<div class="text-left whitespace-pre-line">${ann.isi}</div>`;
+                    const text = document.createElement('div');
+                    text.className = 'text-left whitespace-pre-line';
+                    text.textContent = ann.isi;
+                    contentEl.append(text);
                 },
 
                 totalAnnouncementDuration() {
@@ -489,18 +502,19 @@
                     // KONFIGURASI DURASI (DETIK)
                     // ================================
                     const DUR = {
-                        menjelangAdzan: parseInt(<?= $pengaturan['menjelang_adzan'] ?? 600 ?>) || 600,
-                        adzan: 4.5 * 60,
-                        waktuSholat: parseInt(<?= $pengaturan['waktu_sholat'] ?? 600 ?>) || 600,
-                        khutbahJumat: parseInt(<?= $pengaturan['khutbah_jumat'] ?? 1800 ?>) || 1800
+                        menjelangAdzan: parseInt(<?= (int) ($pengaturan['durasi_menjelang_adzan'] ?? 600) ?>) || 600,
+                        adzan: parseInt(<?= (int) ($pengaturan['durasi_adzan'] ?? 240) ?>) || 240,
+                        menjelangIqamah: parseInt(<?= (int) ($pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>) || 300,
+                        waktuSholat: parseInt(<?= (int) ($pengaturan['durasi_waktu_sholat'] ?? 600) ?>) || 600,
+                        khutbahJumat: parseInt(<?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>) || 1200
                     };
 
                     const IQAMAH = {
-                        subuh: 12 * 60,
-                        dzuhur: 5 * 60,
-                        ashar: 5 * 60,
-                        maghrib: 5 * 60,
-                        isya: 7 * 60
+                        subuh: DUR.menjelangIqamah,
+                        dzuhur: DUR.menjelangIqamah,
+                        ashar: DUR.menjelangIqamah,
+                        maghrib: DUR.menjelangIqamah,
+                        isya: DUR.menjelangIqamah
                     };
 
                     let stateMatched = false;
@@ -805,7 +819,7 @@
 
             // Jika teks terlalu pendek → duplikasi agar animasi tetap panjang & smooth
             if (text.offsetWidth < wrapper.offsetWidth) {
-                text.innerHTML += " — " + text.innerHTML;
+                text.textContent += " — " + text.textContent;
             }
         });
     </script>

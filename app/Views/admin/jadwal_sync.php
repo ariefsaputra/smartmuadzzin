@@ -39,7 +39,7 @@
 </div>
 
 <script>
-document.getElementById("btnSync").onclick = () => {
+document.getElementById("btnSync").onclick = async () => {
 
     const bulan = document.getElementById('bulan').value;
     const tahun = document.getElementById('tahun').value;
@@ -54,27 +54,44 @@ document.getElementById("btnSync").onclick = () => {
 
     const url = "<?= base_url('admin/jadwal/sync') ?>";
 
-    const evtSource = new EventSource(url + "?" +
-        new URLSearchParams({bulan:bulan,tahun:tahun})
-    );
+    const payload = new URLSearchParams({
+        bulan,
+        tahun,
+        "<?= csrf_token() ?>": "<?= csrf_hash() ?>"
+    });
 
-    evtSource.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        const p = Math.floor((data.progress / data.total) * 100);
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: payload
+        });
+        if (!response.ok || !response.body) throw new Error('Sync gagal dimulai');
 
-        bar.style.width = p + "%";
-        txt.innerText = p + "%";
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-        if (p >= 100) {
-            txt.innerHTML = "<span class='text-green-600 font-semibold'>Selesai ✓</span>";
-            evtSource.close();
+        while (true) {
+            const {done, value} = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, {stream: true});
+            const events = buffer.split("\n\n");
+            buffer = events.pop();
+            for (const event of events) {
+                const line = event.split("\n").find(item => item.startsWith('data: '));
+                if (!line) continue;
+                const data = JSON.parse(line.slice(6));
+                if (data.error) throw new Error(data.error);
+                const p = Math.floor((data.progress / data.total) * 100);
+                bar.style.width = p + "%";
+                txt.innerText = p + "%";
+            }
         }
-    };
-
-    evtSource.onerror = function() {
-        evtSource.close();
+        txt.innerHTML = "<span class='text-green-600 font-semibold'>Selesai ✓</span>";
+    } catch (error) {
         txt.innerHTML = "<span class='text-red-600 font-semibold'>Gagal memuat data.</span>";
-    };
+    }
 };
 </script>
 

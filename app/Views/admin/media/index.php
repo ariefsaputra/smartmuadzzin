@@ -48,11 +48,12 @@
             <div class="text-xs text-gray-400">Durasi: <?= $m['duration'] ?> ms</div>
         </div>
 
-        <div>
+        <div class="flex items-center gap-3">
             <a href="<?= base_url('admin/media/edit/'.$m['id']) ?>" class="text-blue-600 mr-3">Edit</a>
-            <a href="<?= base_url('admin/media/delete/'.$m['id']) ?>"
-               onclick="return confirm('Hapus media ini?')"
-               class="text-red-600">Hapus</a>
+            <form action="<?= site_url('admin/media/delete/'.$m['id']) ?>" method="post" onsubmit="return confirm('Hapus media ini?')">
+                <?= csrf_field() ?>
+                <button class="text-red-600">Hapus</button>
+            </form>
         </div>
 
     </div>
@@ -64,6 +65,11 @@
 
 
 <script>
+function currentCsrfToken() {
+    const name = '<?= csrf_cookie_name() ?>=';
+    return document.cookie.split('; ').find(row => row.startsWith(name))?.slice(name.length) || '';
+}
+
 function sortable() {
     return {
         init() {
@@ -82,7 +88,7 @@ function sortable() {
                         fetch("<?= base_url('admin/media/reorder') ?>", {
                             method: "POST",
                             headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                            body: "order[]=" + ids.join("&order[]=")
+                            body: "<?= csrf_token() ?>=" + encodeURIComponent(currentCsrfToken()) + "&order[]=" + ids.join("&order[]=")
                         });
                     }
                 });

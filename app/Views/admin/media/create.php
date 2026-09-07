@@ -4,6 +4,7 @@
 <h1 class="text-xl font-bold mb-4">Tambah Media</h1>
 
 <form action="<?= base_url('admin/media/store') ?>" method="post" enctype="multipart/form-data" class="space-y-4">
+    <?= csrf_field() ?>
 
     <div>
         <label>Judul</label>
