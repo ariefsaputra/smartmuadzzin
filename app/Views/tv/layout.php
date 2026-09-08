@@ -16,7 +16,8 @@
     <?= $this->include('overlay_adzan') ?>
 </main>
 
-<audio id="adzanAlarm" src="<?= base_url('audio/default_beep.mp3') ?>" preload="auto"></audio>
+<audio id="adzanAlarm" src="<?= base_url('audio/default_alarm.mp3') ?>" preload="auto"></audio>
+<audio id="beepAlarm" src="<?= base_url('audio/default_beep.mp3') ?>" preload="auto"></audio>
 
 <script>
 document.addEventListener('alpine:init', () => {
