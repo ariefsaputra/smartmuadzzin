@@ -17,13 +17,12 @@
     <div class="w-full flex items-center gap-[1vw]">
 
         <!-- SOUND ACTIVATION-->
-        <div
-            class="
-                text-[clamp(1.5rem,2.5vw,3rem)]
-                shrink-0
-            "
-        >
-            🔊
+        <div class="flex h-[clamp(30px,2.3vw,48px)] w-[clamp(30px,2.3vw,48px)] items-center justify-center">
+            <img
+                src="<?= base_url('assets/icons/info.png') ?>"
+                alt="Info"
+                class="h-full w-full object-contain"
+            >
         </div>
 
         <!-- TICKER -->

@@ -9,10 +9,13 @@ $time = $prayer['time'] ?? '--:--';
         : "border-white/25 bg-[#034d50]/45 text-white"'
 >
     <div class="flex items-center gap-[.85vw]">
-        <div
-            class="flex h-[clamp(30px,2.3vw,48px)] w-[clamp(30px,2.3vw,48px)] items-center justify-center text-[clamp(1.3rem,2vw,2.3rem)]"
-            :class="isNextPrayer(<?= esc(json_encode($time), 'attr') ?>) ? 'text-[#1d2925]' : '<?= esc($prayer['color'] ?? 'text-amber-300') ?>'"
-        ><?= $prayer['icon'] ?? '☀' ?></div>
+        <div class="flex h-[clamp(30px,2.3vw,48px)] w-[clamp(30px,2.3vw,48px)] items-center justify-center">
+            <img
+                src="<?= base_url('assets/icons/' . ($prayer['icon'] ?? 'dzuhur.png')) ?>"
+                alt="<?= esc($name) ?>"
+                class="h-full w-full object-contain"
+            >
+        </div>
         <span class="text-[clamp(.9rem,1.4vw,1.55rem)] font-semibold"><?= esc($name) ?></span>
     </div>
 

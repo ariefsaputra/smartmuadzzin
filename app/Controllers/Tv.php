@@ -84,14 +84,14 @@ class Tv extends BaseController
 
 
         $prayerTimes = [
-            ['name' => 'Imsak', 'time' => $jadwal['imsak'], 'icon' => '🌙', 'color' => 'text-indigo-500'],
-            ['name' => 'Subuh', 'time' => $jadwal['subuh'], 'icon' => '🌅', 'color' => 'text-amber-500'],
-            ['name' => 'Syuruq', 'time' => $jadwal['syuruq'], 'icon' => '☀', 'color' => 'text-yellow-500'],
-            ['name' => 'Dhuha', 'time' => $jadwal['dhuha'], 'icon' => '☀', 'color' => 'text-orange-500'],
-            ['name' => 'Dzuhur', 'time' => $jadwal['dzuhur'], 'icon' => '☀', 'color' => 'text-amber-600'],
-            ['name' => 'Ashar', 'time' => $jadwal['ashar'], 'icon' => '🌤', 'color' => 'text-orange-600'],
-            ['name' => 'Maghrib', 'time' => $jadwal['maghrib'], 'icon' => '🌇', 'color' => 'text-rose-500'],
-            ['name' => 'Isya', 'time' => $jadwal['isya'], 'icon' => '🌙', 'color' => 'text-indigo-600'],
+            ['name' => 'Imsak', 'time' => $jadwal['imsak'], 'icon' => 'imsak.png', 'color' => 'text-indigo-500'],
+            ['name' => 'Subuh', 'time' => $jadwal['subuh'], 'icon' => 'shubuh.png', 'color' => 'text-amber-500'],
+            ['name' => 'Syuruq', 'time' => $jadwal['syuruq'], 'icon' => 'syuruq.png', 'color' => 'text-yellow-500'],
+            ['name' => 'Dhuha', 'time' => $jadwal['dhuha'], 'icon' => 'dhuha.png', 'color' => 'text-orange-500'],
+            ['name' => 'Dzuhur', 'time' => $jadwal['dzuhur'], 'icon' => 'dzuhur.png', 'color' => 'text-amber-600'],
+            ['name' => 'Ashar', 'time' => $jadwal['ashar'], 'icon' => 'ashar.png', 'color' => 'text-orange-600'],
+            ['name' => 'Maghrib', 'time' => $jadwal['maghrib'], 'icon' => 'maghrib.png', 'color' => 'text-rose-500'],
+            ['name' => 'Isya', 'time' => $jadwal['isya'], 'icon' => 'isya.png', 'color' => 'text-indigo-600'],
         ];
 
         $slides = array_map(static function (array $media): array {
