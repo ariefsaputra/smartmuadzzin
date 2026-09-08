@@ -14,6 +14,9 @@ class JadwalSholatService
      */
     public function getTodayPrayer(?string $kodeKota, bool $forceRefresh = false): ?array
     {
+        //set TIMEZONE
+        date_default_timezone_set('Asia/Jakarta');
+        
         $model = new JadwalModel();
         $today = date('Y-m-d');
         $existing = $model->where('tanggal', $today)->first();
