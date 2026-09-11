@@ -90,11 +90,19 @@ final class PrayerStateResolver
 
     private function secondsUntil(DateTimeImmutable $now, string $time): ?int
     {
-        if (!preg_match('/^(\d{1,2}):(\d{2})(?::\d{2})?$/', trim($time), $matches)) {
+        if (!preg_match('/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/', trim($time), $matches)) {
             return null;
         }
 
-        $target = $now->setTime((int) $matches[1], (int) $matches[2], 0);
+        $hours = (int) $matches[1];
+        $minutes = (int) $matches[2];
+        $seconds = isset($matches[3]) ? (int) $matches[3] : 0;
+
+        if ($hours > 23 || $minutes > 59 || $seconds > 59) {
+            return null;
+        }
+
+        $target = $now->setTime($hours, $minutes, $seconds);
 
         return $target->getTimestamp() - $now->getTimestamp();
     }

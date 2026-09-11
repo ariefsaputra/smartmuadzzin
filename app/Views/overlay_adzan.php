@@ -20,7 +20,17 @@
 
     <div class="absolute inset-x-0 top-[20%] flex flex-col items-center text-center">
       <div x-show="!['waktu_sholat', 'jumat_sholat'].includes(overlay.state)" class="text-[clamp(3rem,6vw,7rem)] leading-none">۩</div>
-      <template x-if="overlay.state === 'adzan'">
+      <template x-if="['menjelang_adzan', 'jumat_pre'].includes(overlay.state)">
+        <div class="flex flex-col items-center">
+          <div class="mt-[1vh] text-[clamp(1.5rem,3vw,3.5rem)] font-extrabold tracking-[.35em]" x-text="overlayTitle()"></div>
+          <div class="mt-[1vh] text-[clamp(.75rem,1.4vw,1.6rem)] font-medium tracking-[.45em] text-white/65" x-text="overlayMessage()"></div>
+          <div x-show="overlay.countdown" class="mt-[3vh] text-[clamp(6rem,13vw,15rem)] font-extrabold leading-none tracking-tight tabular-nums" x-text="overlay.countdown"></div>
+          <div x-show="overlay.countdown" class="mt-[1vh] flex w-[clamp(18rem,35vw,42rem)] justify-between px-[3vw] text-[clamp(.6rem,1vw,1.1rem)] font-semibold tracking-[.45em] text-white/60">
+            <span>MENIT</span><span>DETIK</span>
+          </div>
+        </div>
+      </template>
+      <template x-if="['adzan', 'jumat_adzan'].includes(overlay.state)">
         <div class="mt-[2vh] flex flex-col items-center">
           <div class="text-[clamp(5rem,10vw,12rem)] font-extrabold leading-none tracking-[.2em]">ADZAN</div>
           <div class="mt-[1vh] text-[clamp(1rem,2vw,2.3rem)] font-medium tracking-[.55em] text-white/90">SEDANG BERKUMANDANG</div>
@@ -34,7 +44,7 @@
           <div class="mt-[2vh] text-[clamp(1rem,2vw,2.3rem)] font-medium tracking-[.55em] text-white/90">MARI FOKUS BERIBADAH</div>
         </div>
       </template>
-      <template x-if="!['adzan', 'waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
+      <template x-if="!['menjelang_adzan', 'jumat_pre', 'adzan', 'jumat_adzan', 'waktu_sholat', 'jumat_sholat'].includes(overlay.state)">
         <div class="flex flex-col items-center">
           <div class="mt-[1vh] text-[clamp(1.5rem,3vw,3.5rem)] font-extrabold tracking-[.35em]" x-text="overlayTitle()"></div>
           <div class="mt-[1vh] text-[clamp(.75rem,1.4vw,1.6rem)] font-medium tracking-[.45em] text-white/65" x-text="overlayMessage()"></div>
