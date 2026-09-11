@@ -14,6 +14,7 @@
     <?= $this->include('tv/partials/main') ?>
     <?= $this->include('tv/partials/footer') ?>
     <?= $this->include('overlay_adzan') ?>
+    <?= $this->include('overlay_malam') ?>
 </main>
 
 <audio id="adzanAlarm" src="<?= base_url('audio/default-alarm.mp3') ?>" preload="auto"></audio>
@@ -46,15 +47,20 @@ function tvDisplay() {
         lastPrayerState: null,
         audioUnlocked: false,
         overlay: {active: false, state: null, namaSholat: '', countdown: ''},
+        nightOverlay: {active: false, countdown: '00:00:00'},
 
         init() {
             this.updateClock();
             setInterval(() => this.updateClock(), 1000);
             this.runMode();
             this.startPrayerWatcher();
+            this.startNightWatcher();
             this.reloadAtMidnight();
             this.initAudioUnlock();
         },
+        // Fallback: jika browser masih memblokir autoplay bersuara sebelum ada
+        // interaksi pengguna, sentuhan/klik/keydown pertama akan "meng-unlock"
+        // elemen audio sehingga pemutaran berikutnya oleh playAlarm() tidak diblokir.
         initAudioUnlock() {
             const unlock = () => {
                 const alarm = document.getElementById('adzanAlarm');
@@ -66,14 +72,27 @@ function tvDisplay() {
                         document.removeEventListener(e, unlock)
                     );
                     setTimeout(() => {
-                        alarm.pause();
-                        alarm.currentTime = 0;
+                    alarm.pause();
+                    alarm.currentTime = 0;
                     }, 2000);
                 }).catch(() => {});
             };
             ['click', 'keydown', 'touchstart'].forEach(e =>
                 document.addEventListener(e, unlock, {once: false})
             );
+        },
+        playAlarm() {
+            const alarm = document.getElementById('adzanAlarm');
+            if (!alarm) return;
+            clearTimeout(this.alarmTimer);
+            alarm.pause();
+            alarm.currentTime = 0;
+            alarm.play().then(() => {
+                this.alarmTimer = setTimeout(() => {
+                    alarm.pause();
+                    alarm.currentTime = 0;
+                }, 6000);
+            }).catch(() => {});
         },
         updateClock() {
             this.now = new Date();
@@ -128,7 +147,10 @@ function tvDisplay() {
                 jumat_sholat: 'WAKTU SHOLAT JUMAT'
             };
             const label = labels[this.overlay.state] || '';
-            return this.overlay.namaSholat ? `${label} ${this.overlay.namaSholat}` : label;
+            if (!this.overlay.namaSholat || this.overlay.namaSholat === 'JUMAT' || (this.overlay.state && this.overlay.state.startsWith('jumat_'))) {
+                return label;
+            }
+            return `${label} ${this.overlay.namaSholat}`;
         },
         overlayMessage() {
             const messages = {
@@ -211,37 +233,105 @@ function tvDisplay() {
                 pre: <?= (int) ($pengaturan['durasi_menjelang_adzan'] ?? 600) ?>,
                 adzan: <?= (int) ($pengaturan['durasi_adzan'] ?? 240) ?>,
                 iqamah: <?= (int) ($pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
-                prayer: <?= (int) ($pengaturan['durasi_waktu_sholat'] ?? 600) ?>
+                prayer: <?= (int) ($pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
+                khutbahJumat: <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>
             };
             let matched = false;
             if (now.getDay() === 5) {
-                const diff = (new Date(`${now.toDateString()} ${this.prayerTimes.dzuhur}`) - now) / 1000;
-                if (this.prayerTimes.dzuhur && this.prayerTimes.dzuhur !== '--:--' && diff > 0 && diff <= durations.pre) {
-                    this.setOverlay('jumat_pre', 'JUMAT', this.countdown(diff)); matched = true;
-                } else if (diff <= 0 && diff > -durations.adzan) {
-                    this.setOverlay('jumat_adzan', 'JUMAT', this.countdown(durations.adzan + diff)); matched = true;
-                } else if (diff <= -durations.adzan && diff > -(durations.adzan + <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>)) {
-                    this.setOverlay('jumat_khutbah', 'JUMAT', ''); matched = true;
-                } else if (diff <= -(durations.adzan + <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>) && diff > -(durations.adzan + <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?> + durations.prayer)) {
-                    this.setOverlay('jumat_sholat', 'JUMAT', ''); matched = true;
+                const dzuhurTime = this.prayerTimes.dzuhur;
+                if (dzuhurTime && dzuhurTime !== '--:--') {
+                    const diff = (new Date(`${now.toDateString()} ${dzuhurTime}`) - now) / 1000;
+                    if (diff > 0 && diff <= durations.pre) {
+                        this.setOverlay('jumat_pre', 'JUMAT', this.countdown(diff));
+                        matched = true;
+                    } else if (diff <= 0 && diff > -durations.adzan) {
+                        this.setOverlay('jumat_adzan', 'JUMAT', this.countdown(durations.adzan + diff));
+                        matched = true;
+                    } else if (diff <= -durations.adzan && diff > -(durations.adzan + durations.khutbahJumat)) {
+                        this.setOverlay('jumat_khutbah', 'JUMAT', '');
+                        matched = true;
+                    } else if (diff <= -(durations.adzan + durations.khutbahJumat) && diff > -(durations.adzan + durations.khutbahJumat + durations.prayer)) {
+                        this.setOverlay('jumat_sholat', 'JUMAT', '');
+                        matched = true;
+                    }
                 }
             }
-            for (const name of ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']) {
-                if (matched || (now.getDay() === 5 && name === 'dzuhur')) break;
-                const time = this.prayerTimes[name];
-                if (!time || time === '--:--') continue;
-                const diff = (new Date(`${now.toDateString()} ${time}`) - now) / 1000;
-                if (diff > 0 && diff <= durations.pre) { this.setOverlay('menjelang_adzan', name.toUpperCase(), this.countdown(diff)); matched = true; break; }
-                if (diff <= 0 && diff > -durations.adzan) { this.setOverlay('adzan', name.toUpperCase(), ''); matched = true; break; }
-                if (diff <= -durations.adzan && diff > -(durations.adzan + durations.iqamah)) { this.setOverlay('menjelang_iqamah', name.toUpperCase(), this.countdown(durations.adzan + durations.iqamah + diff)); matched = true; break; }
-                if (diff <= -(durations.adzan + durations.iqamah) && diff > -(durations.adzan + durations.iqamah + durations.prayer)) { this.setOverlay('waktu_sholat', name.toUpperCase(), ''); matched = true; break; }
+            if (!matched) {
+                for (const name of ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya']) {
+                    if (now.getDay() === 5 && name === 'dzuhur') continue;
+                    const time = this.prayerTimes[name];
+                    if (!time || time === '--:--') continue;
+                    const diff = (new Date(`${now.toDateString()} ${time}`) - now) / 1000;
+                    if (diff > 0 && diff <= durations.pre) {
+                        this.setOverlay('menjelang_adzan', name.toUpperCase(), this.countdown(diff));
+                        matched = true;
+                        break;
+                    }
+                    if (diff <= 0 && diff > -durations.adzan) {
+                        this.setOverlay('adzan', name.toUpperCase(), '');
+                        matched = true;
+                        break;
+                    }
+                    if (diff <= -durations.adzan && diff > -(durations.adzan + durations.iqamah)) {
+                        this.setOverlay('menjelang_iqamah', name.toUpperCase(), this.countdown(durations.adzan + durations.iqamah + diff));
+                        matched = true;
+                        break;
+                    }
+                    if (diff <= -(durations.adzan + durations.iqamah) && diff > -(durations.adzan + durations.iqamah + durations.prayer)) {
+                        this.setOverlay('waktu_sholat', name.toUpperCase(), '');
+                        matched = true;
+                        break;
+                    }
+                }
             }
             if (!matched && this.overlay.active) this.clearOverlay();
+        },
+        startNightWatcher() {
+            this.checkNightState();
+            setInterval(() => this.checkNightState(), 1000);
+        },
+        isNightHours(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            // Aktif 21:00 - 03:30 (melewati tengah malam)
+            if (hours >= 21) return true;
+            if (hours < 3) return true;
+            if (hours === 3 && minutes <= 30) return true;
+            return false;
+        },
+        nightTarget(now) {
+            const imsak = this.prayerTimes.imsak;
+            const match = String(imsak).trim().match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+            const target = new Date(now);
+            if (match) {
+                target.setHours(Number(match[1]), Number(match[2]), 0, 0);
+            } else {
+                target.setHours(3, 30, 0, 0);
+            }
+            if (target <= now) target.setDate(target.getDate() + 1);
+            return target;
+        },
+        checkNightState() {
+            const now = new Date();
+            const active = this.isNightHours(now) && !this.overlay.active;
+            if (active) {
+                const target = this.nightTarget(now);
+                const diff = Math.max(0, Math.floor((target - now) / 1000));
+                const hours = Math.floor(diff / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+                this.nightOverlay = {
+                    active: true,
+                    countdown: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+                };
+            } else if (this.nightOverlay.active) {
+                this.nightOverlay = {active: false, countdown: '00:00:00'};
+            }
         },
         setOverlay(state, name, countdown) {
             const stateChanged = this.lastPrayerState !== state;
             if (stateChanged) {
-                if (['menjelang_adzan', 'adzan', 'waktu_sholat'].includes(state)) {
+                if (['menjelang_adzan', 'jumat_pre', 'adzan', 'jumat_adzan', 'waktu_sholat', 'jumat_sholat'].includes(state)) {
                     const alarm = document.getElementById('adzanAlarm');
                     if (alarm && this.audioUnlocked) {
                         clearTimeout(this.alarmTimer);
