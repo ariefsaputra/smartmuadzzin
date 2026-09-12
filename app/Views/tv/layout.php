@@ -18,7 +18,6 @@
 </main>
 
 <audio id="adzanAlarm" src="<?= base_url('audio/default-alarm.mp3') ?>" preload="auto"></audio>
-<audio id="beepAlarm" src="<?= base_url('audio/default_beep.mp3') ?>" preload="auto"></audio>
 
 <script>
 document.addEventListener('alpine:init', () => {
@@ -232,7 +231,13 @@ function tvDisplay() {
             const durations = {
                 pre: <?= (int) ($pengaturan['durasi_menjelang_adzan'] ?? 600) ?>,
                 adzan: <?= (int) ($pengaturan['durasi_adzan'] ?? 240) ?>,
-                iqamah: <?= (int) ($pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                iqamah: {
+                    subuh: <?= (int) ($pengaturan['durasi_iqamah_shubuh'] ?? $pengaturan['durasi_iqamah_subuh'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                    dzuhur: <?= (int) ($pengaturan['durasi_iqamah_dzuhur'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                    ashar: <?= (int) ($pengaturan['durasi_iqamah_ashar'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                    maghrib: <?= (int) ($pengaturan['durasi_iqamah_maghrib'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                    isya: <?= (int) ($pengaturan['durasi_iqamah_isya'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>
+                },
                 prayer: <?= (int) ($pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
                 khutbahJumat: <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>
             };
@@ -262,6 +267,7 @@ function tvDisplay() {
                     const time = this.prayerTimes[name];
                     if (!time || time === '--:--') continue;
                     const diff = (new Date(`${now.toDateString()} ${time}`) - now) / 1000;
+                    const iqamahDuration = durations.iqamah[name] * 60;
                     if (diff > 0 && diff <= durations.pre) {
                         this.setOverlay('menjelang_adzan', name.toUpperCase(), this.countdown(diff));
                         matched = true;
@@ -272,12 +278,12 @@ function tvDisplay() {
                         matched = true;
                         break;
                     }
-                    if (diff <= -durations.adzan && diff > -(durations.adzan + durations.iqamah)) {
-                        this.setOverlay('menjelang_iqamah', name.toUpperCase(), this.countdown(durations.adzan + durations.iqamah + diff));
+                    if (diff <= -durations.adzan && diff > -(durations.adzan + iqamahDuration)) {
+                        this.setOverlay('menjelang_iqamah', name.toUpperCase(), this.countdown(durations.adzan + iqamahDuration + diff));
                         matched = true;
                         break;
                     }
-                    if (diff <= -(durations.adzan + durations.iqamah) && diff > -(durations.adzan + durations.iqamah + durations.prayer)) {
+                    if (diff <= -(durations.adzan + iqamahDuration) && diff > -(durations.adzan + iqamahDuration + durations.prayer)) {
                         this.setOverlay('waktu_sholat', name.toUpperCase(), '');
                         matched = true;
                         break;
