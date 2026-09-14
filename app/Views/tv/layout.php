@@ -274,8 +274,8 @@ function tvDisplay() {
                     const time = this.prayerTimes[name];
                     if (!time || time === '--:--') continue;
                     const diff = (new Date(`${now.toDateString()} ${time}`) - now) / 1000;
-                    const iqamahDuration = durations.iqamah[name] * 60;
-                    const prayerDuration = durations.prayer[name] * 60;
+                    const iqamahDuration = durations.iqamah[name];
+                    const prayerDuration = durations.prayer[name];
 
                     console.log(`Checking prayer: ${name}, diff: ${diff}, iqamahDuration: ${iqamahDuration}, prayerDuration: ${prayerDuration}`);
 
