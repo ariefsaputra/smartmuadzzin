@@ -239,11 +239,11 @@ function tvDisplay() {
                     isya: <?= (int) ($pengaturan['durasi_iqamah_isya'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>
                 },
                 prayer: {
-                    subuh: <?= (int) ($pengaturan['durasi_waktu_sholat_subuh'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
-                    dzuhur: <?= (int) ($pengaturan['durasi_waktu_sholat_dzuhur'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
-                    ashar: <?= (int) ($pengaturan['durasi_waktu_sholat_ashar'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
-                    maghrib: <?= (int) ($pengaturan['durasi_waktu_sholat_maghrib'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
-                    isya: <?= (int) ($pengaturan['durasi_waktu_sholat_isya'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>
+                    subuh: <?= (int) ($pengaturan['durasi_sholat_subuh'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
+                    dzuhur: <?= (int) ($pengaturan['durasi_sholat_dzuhur'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
+                    ashar: <?= (int) ($pengaturan['durasi_sholat_ashar'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
+                    maghrib: <?= (int) ($pengaturan['durasi_sholat_maghrib'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>,
+                    isya: <?= (int) ($pengaturan['durasi_sholat_isya'] ?? $pengaturan['durasi_waktu_sholat'] ?? 600) ?>
                 },
                 khutbahJumat: <?= (int) ($pengaturan['durasi_khutbah_jumat'] ?? 1200) ?>
             };
@@ -274,8 +274,11 @@ function tvDisplay() {
                     const time = this.prayerTimes[name];
                     if (!time || time === '--:--') continue;
                     const diff = (new Date(`${now.toDateString()} ${time}`) - now) / 1000;
-                    const iqamahDuration = durations.iqamah[name];
-                    const prayerDuration = durations.prayer[name];
+                    const iqamahDuration = durations.iqamah[name] * 60;
+                    const prayerDuration = durations.prayer[name] * 60;
+
+                    console.log(`Checking prayer: ${name}, diff: ${diff}, iqamahDuration: ${iqamahDuration}, prayerDuration: ${prayerDuration}`);
+
                     if (diff > 0 && diff <= durations.pre) {
                         this.setOverlay('menjelang_adzan', name.toUpperCase(), this.countdown(diff));
                         matched = true;
