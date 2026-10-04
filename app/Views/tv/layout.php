@@ -9,7 +9,7 @@
     <style>[x-cloak] { display: none !important; }</style>
 </head>
 <body class="bg-slate-100 overflow-hidden">
-<main x-data="tvDisplay()" x-init="init()" class="w-screen h-screen">
+    <main x-data="tvDisplay()" class="w-screen h-screen">
     <?= $this->include('tv/partials/header') ?>
     <?= $this->include('tv/partials/main') ?>
     <?= $this->include('tv/partials/footer') ?>
@@ -56,16 +56,20 @@ function tvDisplay() {
             this.startNightWatcher();
             this.reloadAtMidnight();
             this.initAudioUnlock();
+            this.playAlarm(); // Coba mainkan alarm saat inisialisasi
         },
         // Fallback: jika browser masih memblokir autoplay bersuara sebelum ada
         // interaksi pengguna, sentuhan/klik/keydown pertama akan "meng-unlock"
-        // elemen audio sehingga pemutaran berikutnya oleh playAlarm() tidak diblokir.
+        // elemen audio sehingga pemutaran berikutnya tidak diblokir.
+        // User side solution: pakai flag --autoplay-policy=no-user-gesture-required 
+        //    agar browser berbasis Chromium tidak memblokir autoplay suara.
         initAudioUnlock() {
             const unlock = () => {
                 const alarm = document.getElementById('adzanAlarm');
                 if (!alarm) return;
                 alarm.currentTime = 0;
                 alarm.play().then(() => {
+                    console.log('(initAudioUnlock)Audio playback started successfully.');
                     this.audioUnlocked = true;
                     ['click', 'keydown', 'touchstart'].forEach(e =>
                         document.removeEventListener(e, unlock)
@@ -74,7 +78,9 @@ function tvDisplay() {
                     alarm.pause();
                     alarm.currentTime = 0;
                     }, 2000);
-                }).catch(() => {});
+                }).catch((error) => {
+                    console.error('(initAudioUnlock)Audio playback failed:', error);
+                });
             };
             ['click', 'keydown', 'touchstart'].forEach(e =>
                 document.addEventListener(e, unlock, {once: false})
@@ -87,11 +93,14 @@ function tvDisplay() {
             alarm.pause();
             alarm.currentTime = 0;
             alarm.play().then(() => {
+                        console.log('(playAlarm)Audio playback started successfully.');
                 this.alarmTimer = setTimeout(() => {
                     alarm.pause();
                     alarm.currentTime = 0;
                 }, 6000);
-            }).catch(() => {});
+                    }).catch((error) => {
+                        console.error('(playAlarm)Audio playback failed:', error);
+                    });
         },
         updateClock() {
             this.now = new Date();
@@ -232,7 +241,7 @@ function tvDisplay() {
                 pre: <?= (int) ($pengaturan['durasi_menjelang_adzan'] ?? 600) ?>,
                 adzan: <?= (int) ($pengaturan['durasi_adzan'] ?? 240) ?>,
                 iqamah: {
-                    subuh: <?= (int) ($pengaturan['durasi_iqamah_shubuh'] ?? $pengaturan['durasi_iqamah_subuh'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
+                    subuh: <?= (int) ($pengaturan['durasi_iqamah_subuh'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
                     dzuhur: <?= (int) ($pengaturan['durasi_iqamah_dzuhur'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
                     ashar: <?= (int) ($pengaturan['durasi_iqamah_ashar'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
                     maghrib: <?= (int) ($pengaturan['durasi_iqamah_maghrib'] ?? $pengaturan['durasi_menjelang_iqamah'] ?? 300) ?>,
@@ -277,7 +286,7 @@ function tvDisplay() {
                     const iqamahDuration = durations.iqamah[name];
                     const prayerDuration = durations.prayer[name];
 
-                    console.log(`Checking prayer: ${name}, diff: ${diff}, iqamahDuration: ${iqamahDuration}, prayerDuration: ${prayerDuration}`);
+                    //console.log(`Checking prayer: ${name}, diff: ${diff}, iqamahDuration: ${iqamahDuration}, prayerDuration: ${prayerDuration}`);
 
                     if (diff > 0 && diff <= durations.pre) {
                         this.setOverlay('menjelang_adzan', name.toUpperCase(), this.countdown(diff));
@@ -350,12 +359,16 @@ function tvDisplay() {
             if (stateChanged) {
                 if (['menjelang_adzan', 'jumat_pre', 'adzan', 'jumat_adzan', 'waktu_sholat', 'jumat_sholat'].includes(state)) {
                     const alarm = document.getElementById('adzanAlarm');
-                    if (alarm && this.audioUnlocked) {
+                    // Tetap mainkan alarm meskipun audio belum di-unlock dan browser akan memblokirnya. 
+                    // Namun, jika audio sudah di-unlock, maka alarm akan berhasil diputar.
+                    if (alarm) {
                         clearTimeout(this.alarmTimer);
                         alarm.currentTime = 0;
                         alarm.play().then(() => {
                             this.alarmTimer = setTimeout(() => alarm.pause(), 6000);
-                        }).catch(() => {});
+                         }).catch((error) => {
+                            console.error('(setOverlay)Audio playback failed:', error);
+                        });
                     }
                 }
                 clearTimeout(this.modeTimer);
